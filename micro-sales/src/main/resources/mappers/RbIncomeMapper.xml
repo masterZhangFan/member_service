@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gaozheng.sales.mapper.RbIncomeMapper" >
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.RbIncome" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="VARCHAR" />
+    <result column="rank" property="rank" jdbcType="INTEGER" />
+    <result column="payCount" property="paycount" jdbcType="INTEGER" />
+    <result column="commission" property="commission" jdbcType="DECIMAL" />
+    <result column="yesterday_payCount" property="yesterdayPaycount" jdbcType="INTEGER" />
+    <result column="yesterday_commission" property="yesterdayCommission" jdbcType="DECIMAL" />
+    <result column="thismonth_balance" property="thismonthBalance" jdbcType="DECIMAL" />
+    <result column="thismonth_jiesuan_balance" property="thismonthJiesuanBalance" jdbcType="DECIMAL" />
+    <result column="lastmonth_balance" property="lastmonthBalance" jdbcType="DECIMAL" />
+    <result column="lastmonth_jiesuan_balance" property="lastmonthJiesuanBalance" jdbcType="DECIMAL" />
+    <result column="update_date1" property="updateDate1" jdbcType="INTEGER" />
+    <result column="update_date2" property="updateDate2" jdbcType="INTEGER" />
+    <result column="update_date3" property="updateDate3" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+</mapper>

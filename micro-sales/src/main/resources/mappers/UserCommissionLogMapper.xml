@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gaozheng.sales.mapper.UserCommissionLogMapper" >
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.UserCommissionLog" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="rec_id" property="recId" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="BIT" />
+    <result column="describe" property="describe" jdbcType="VARCHAR" />
+    <result column="bill" property="bill" jdbcType="DECIMAL" />
+    <result column="old_commission" property="oldCommission" jdbcType="DECIMAL" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="BIT" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,36 @@
+server:
+  port: 7788
+  http:
+    port: 7789
+spring:
+  devtools:
+    livereload:
+      enabled: true # 是否支持livereload
+      port: 19901
+    restart:
+      enabled: true # 是否支持热部署
+  datasource:
+    druid:
+      name: default
+      url: jdbc:mysql://123.206.134.85:3799/vts_call?useSSL=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
+      username: root
+      password: 2017!@#.haoyun.7cool.cc
+      driverClassName: com.mysql.jdbc.Driver
+      dbType: mysql
+      filters: stat
+      initialSize: 0
+      minIdle: 2
+      maxWait: 3000
+      maxActive: 10
+      timeBetweenEvictionRunsMillis: 20000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      maxOpenPreparedStatements: 100
+      logAbandoned: false
+system:
+  default:
+    file:
+      upload-path: /opt/files/sales/

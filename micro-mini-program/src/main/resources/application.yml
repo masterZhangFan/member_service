@@ -1,0 +1,102 @@
+server:
+  port: 7788
+  ssl:
+    key-store: classpath:miniapp.idmakers.cn.jks
+    key-store-password: MiniMaker.@0!9
+    enabled: true
+    key-store-type: JKS
+  http:
+    port: 9002
+
+logging:
+  level:
+    cn.gaozheng.mini.mybatis: debug
+    cn.gaozheng: debug
+  file: ./logs/microMiniProgram.log
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      enabled: true
+      resolve-lazily: true
+      file-size-threshold: 16KB
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  devtools:
+    livereload:
+      enabled: false # 是否支持livereload
+      port: 19901
+    restart:
+      enabled: false # 是否支持热部署
+  profiles:
+    active: release
+  application:
+    name: mini-program
+  datasource:
+    druid:
+      name: default
+      url: jdbc:mysql://192.168.0.116:3306/sales_dev?useSSL=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
+      username: root
+      password: Cloudsea1!
+      driverClassName: com.mysql.cj.jdbc.Driver
+      dbType: mysql
+      filters: stat
+      initialSize: 0
+      minIdle: 2
+      maxWait: 3000
+      maxActive: 10
+      timeBetweenEvictionRunsMillis: 20000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      maxOpenPreparedStatements: 100
+      logAbandoned: false
+mybatis:
+  config-location: classpath:mybatis-configuration.xml
+  mapper-locations: classpath:mapper/*.xml
+#eureka:
+#  instance:
+#    preferIpAddress: true
+#    appname: mini-program
+#  client:
+#    serviceUrl:
+#      defaultZone: http://127.0.0.1:10001/eureka/
+sms:
+  api-key: 4e23b08fb613daf212765fe13db39481
+  username: cdsw
+  password: asdf12345
+  template: 【高争销售系统】 短信验证码 %s， 有效期五分钟。
+wx:
+  config:
+    url: https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=%s
+    app-id: wx81210388ebced979
+    secret: e7e3709012ee9a5505a503d1ed05ec7d
+    grant-type: authorization_code
+system:
+  order:
+    weight-for-bag: 50
+  plan:
+    # 计划总量
+    total-weight: 100000.0
+    # 计划申请建议量
+    sug-weight: 100.0
+    # 计划申请上下浮动比率
+    sug-weight-float-fatio: 0.1
+  login:
+    auth:
+      phone-for-test: 18408249248
+      code-for-test: 123456
+  default:
+    file:
+      upload-path:
+      upload-dir: mobileFolder
+web:
+  upload-path: ${system.default.file.upload-path}
+beehive-url:
+resourceKey:

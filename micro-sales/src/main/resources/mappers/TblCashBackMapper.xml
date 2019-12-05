@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gaozheng.sales.mapper.TblCashBackMapper">
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblCashBack">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="cash_back_id" jdbcType="BIGINT" property="cashBackId" />
+    <result column="cash_back_money" jdbcType="DOUBLE" property="cashBackMoney" />
+    <result column="cash_back_from_user_id" jdbcType="INTEGER" property="cashBackFromUserId" />
+    <result column="cash_back_to_user_id" jdbcType="INTEGER" property="cashBackToUserId" />
+    <result column="cash_back_type" jdbcType="INTEGER" property="cashBackType" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblCashBack">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="cash_back_id" jdbcType="BIGINT" property="cashBackId" />
+    <result column="cash_back_money" jdbcType="DOUBLE" property="cashBackMoney" />
+    <result column="cash_back_from_user_id" jdbcType="INTEGER" property="cashBackFromUserId" />
+    <result column="cash_back_to_user_id" jdbcType="INTEGER" property="cashBackToUserId" />
+    <result column="cash_back_type" jdbcType="INTEGER" property="cashBackType" />
+  </resultMap>
+</mapper>

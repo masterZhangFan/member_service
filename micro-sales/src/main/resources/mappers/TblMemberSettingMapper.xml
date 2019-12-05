@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gaozheng.sales.mapper.TblMemberSettingMapper">
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblMemberSetting">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="member_price" jdbcType="INTEGER" property="memberPrice" />
+    <result column="once_level_cashback" jdbcType="INTEGER" property="onceLevelCashback" />
+    <result column="second_level_cashback" jdbcType="INTEGER" property="secondLevelCashback" />
+    <result column="tax_rate" jdbcType="DOUBLE" property="taxRate" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblMemberSetting">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="member_price" jdbcType="INTEGER" property="memberPrice" />
+    <result column="once_level_cashback" jdbcType="INTEGER" property="onceLevelCashback" />
+    <result column="second_level_cashback" jdbcType="INTEGER" property="secondLevelCashback" />
+    <result column="tax_rate" jdbcType="DOUBLE" property="taxRate" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gaozheng.sales.mapper.TblChargeConfigMapper" >
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblChargeConfig" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="appid" property="appid" jdbcType="VARCHAR" />
+    <result column="mch_id" property="mchId" jdbcType="VARCHAR" />
+    <result column="secret" property="secret" jdbcType="VARCHAR" />
+    <result column="apiKey" property="apikey" jdbcType="VARCHAR" />
+    <result column="notify_url" property="notifyUrl" jdbcType="VARCHAR" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gaozheng.sales.mapper.TblPayOrderMapper">
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="TINYINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="TINYINT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="trasaction_order" jdbcType="VARCHAR" property="trasactionOrder" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="total_amount" jdbcType="BIGINT" property="totalAmount" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_currency" jdbcType="VARCHAR" property="payCurrency" />
+    <result column="pay_coupon" jdbcType="VARCHAR" property="payCoupon" />
+    <result column="pay_for" jdbcType="TINYINT" property="payFor" />
+    <result column="pay_status" jdbcType="TINYINT" property="payStatus" />
+    <result column="pay_msg" jdbcType="VARCHAR" property="payMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
+    <result column="return_time" jdbcType="TIMESTAMP" property="returnTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="trasaction_order" jdbcType="VARCHAR" property="trasactionOrder" />
+    <result column="supplier_id" jdbcType="BIGINT" property="supplierId" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="wx_order" jdbcType="VARCHAR" property="wxOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="DOUBLE" property="payMoney" />
+    <result column="call_amount" jdbcType="DOUBLE" property="callAmount" />
+    <result column="shopping_amount" jdbcType="DOUBLE" property="shoppingAmount" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="TINYINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="TINYINT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="trasaction_order" jdbcType="VARCHAR" property="trasactionOrder" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="total_amount" jdbcType="BIGINT" property="totalAmount" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_currency" jdbcType="VARCHAR" property="payCurrency" />
+    <result column="pay_coupon" jdbcType="VARCHAR" property="payCoupon" />
+    <result column="pay_for" jdbcType="TINYINT" property="payFor" />
+    <result column="pay_status" jdbcType="TINYINT" property="payStatus" />
+    <result column="pay_msg" jdbcType="VARCHAR" property="payMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
+    <result column="return_time" jdbcType="TIMESTAMP" property="returnTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="trasaction_order" jdbcType="VARCHAR" property="trasactionOrder" />
+    <result column="supplier_id" jdbcType="BIGINT" property="supplierId" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="wx_order" jdbcType="VARCHAR" property="wxOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="DOUBLE" property="payMoney" />
+    <result column="call_amount" jdbcType="DOUBLE" property="callAmount" />
+    <result column="shopping_amount" jdbcType="DOUBLE" property="shoppingAmount" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="TINYINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="TINYINT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="trasaction_order" jdbcType="VARCHAR" property="trasactionOrder" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="total_amount" jdbcType="BIGINT" property="totalAmount" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_currency" jdbcType="VARCHAR" property="payCurrency" />
+    <result column="pay_coupon" jdbcType="VARCHAR" property="payCoupon" />
+    <result column="pay_for" jdbcType="TINYINT" property="payFor" />
+    <result column="pay_status" jdbcType="TINYINT" property="payStatus" />
+    <result column="pay_msg" jdbcType="VARCHAR" property="payMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
+    <result column="return_time" jdbcType="TIMESTAMP" property="returnTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="trasaction_order" jdbcType="VARCHAR" property="trasactionOrder" />
+    <result column="supplier_id" jdbcType="BIGINT" property="supplierId" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="wx_order" jdbcType="VARCHAR" property="wxOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="DOUBLE" property="payMoney" />
+    <result column="call_amount" jdbcType="DOUBLE" property="callAmount" />
+    <result column="shopping_amount" jdbcType="DOUBLE" property="shoppingAmount" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="TINYINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="TINYINT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="trasaction_order" jdbcType="VARCHAR" property="trasactionOrder" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="TINYINT" property="payType" />
+    <result column="total_amount" jdbcType="BIGINT" property="totalAmount" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_currency" jdbcType="VARCHAR" property="payCurrency" />
+    <result column="pay_coupon" jdbcType="VARCHAR" property="payCoupon" />
+    <result column="pay_for" jdbcType="TINYINT" property="payFor" />
+    <result column="pay_status" jdbcType="TINYINT" property="payStatus" />
+    <result column="pay_msg" jdbcType="VARCHAR" property="payMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="close_time" jdbcType="TIMESTAMP" property="closeTime" />
+    <result column="return_time" jdbcType="TIMESTAMP" property="returnTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+    <result column="trasaction_order" jdbcType="VARCHAR" property="trasactionOrder" />
+    <result column="supplier_id" jdbcType="BIGINT" property="supplierId" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="BIGINT" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblPayOrder">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_order" jdbcType="VARCHAR" property="payOrder" />
+    <result column="pay_type" jdbcType="SMALLINT" property="payType" />
+    <result column="pay_money" jdbcType="DOUBLE" property="payMoney" />
+    <result column="pay_for" jdbcType="SMALLINT" property="payFor" />
+    <result column="is_pay_success" jdbcType="BIT" property="isPaySuccess" />
+    <result column="failure_msg" jdbcType="VARCHAR" property="failureMsg" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="payer" jdbcType="VARCHAR" property="payer" />
+    <result column="payee" jdbcType="VARCHAR" property="payee" />
+  </resultMap>
+</mapper>

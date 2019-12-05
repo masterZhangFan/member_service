@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gaozheng.sales.mapper.UserWithdrawLogMapper">
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.UserWithdrawLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="rec_id" jdbcType="INTEGER" property="recId" />
+    <result column="log_id" jdbcType="INTEGER" property="logId" />
+    <result column="uid" jdbcType="VARCHAR" property="uid" />
+    <result column="bill" jdbcType="DECIMAL" property="bill" />
+    <result column="to_type" jdbcType="VARCHAR" property="toType" />
+    <result column="to_account" jdbcType="VARCHAR" property="toAccount" />
+    <result column="to_realname" jdbcType="VARCHAR" property="toRealname" />
+    <result column="to_bank" jdbcType="VARCHAR" property="toBank" />
+    <result column="submit_remark" jdbcType="VARCHAR" property="submitRemark" />
+    <result column="audit_remark" jdbcType="VARCHAR" property="auditRemark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="audit_time" jdbcType="TIMESTAMP" property="auditTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.UserWithdrawLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="rec_id" jdbcType="INTEGER" property="recId" />
+    <result column="log_id" jdbcType="INTEGER" property="logId" />
+    <result column="uid" jdbcType="VARCHAR" property="uid" />
+    <result column="bill" jdbcType="DECIMAL" property="bill" />
+    <result column="to_type" jdbcType="VARCHAR" property="toType" />
+    <result column="to_account" jdbcType="VARCHAR" property="toAccount" />
+    <result column="to_realname" jdbcType="VARCHAR" property="toRealname" />
+    <result column="to_bank" jdbcType="VARCHAR" property="toBank" />
+    <result column="submit_remark" jdbcType="VARCHAR" property="submitRemark" />
+    <result column="audit_remark" jdbcType="VARCHAR" property="auditRemark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="audit_time" jdbcType="TIMESTAMP" property="auditTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+  </resultMap>
+</mapper>

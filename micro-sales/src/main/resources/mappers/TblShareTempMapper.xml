@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.gaozheng.sales.mapper.TblShareTempMapper" >
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.TblShareTemp" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="share_temp_id" property="shareTempId" jdbcType="BIGINT" />
+    <result column="share_temp_size_width" property="shareTempSizeWidth" jdbcType="DOUBLE" />
+    <result column="share_temp_size_height" property="shareTempSizeHeight" jdbcType="DOUBLE" />
+    <result column="share_temp_small_pic" property="shareTempSmallPic" jdbcType="VARCHAR" />
+    <result column="share_temp_big_pic" property="shareTempBigPic" jdbcType="VARCHAR" />
+    <result column="share_text_point_x" property="shareTextPointX" jdbcType="DOUBLE" />
+    <result column="share_text_point_y" property="shareTextPointY" jdbcType="DOUBLE" />
+    <result column="share_text_size_width" property="shareTextSizeWidth" jdbcType="DOUBLE" />
+    <result column="share_text_size_height" property="shareTextSizeHeight" jdbcType="DOUBLE" />
+    <result column="share_qrcode_point_x" property="shareQrcodePointX" jdbcType="DOUBLE" />
+    <result column="share_qrcode_point_y" property="shareQrcodePointY" jdbcType="DOUBLE" />
+    <result column="share_qrcode_point_size" property="shareQrcodePointSize" jdbcType="DOUBLE" />
+  </resultMap>
+</mapper>

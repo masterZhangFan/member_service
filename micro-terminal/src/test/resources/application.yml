@@ -1,0 +1,57 @@
+#server:
+#  port: 9001
+logging:
+  level:
+    com.anythinx.permission.mybatis: DEBUG
+    org.testng: DEBUG
+spring:
+  profiles:
+    active: test
+  application:
+    name: management-permission
+  datasource:
+    druid:
+      name: default
+      url: jdbc:h2:mem:permission;MODE=MYSQL
+      username: sa
+      password:
+      driverClassName: org.h2.Driver
+      filters: stat
+      initialSize: 2
+      minIdle: 2
+      maxWait: 3000
+      maxActive: 10
+      timeBetweenEvictionRunsMillis: 20000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      maxOpenPreparedStatements: 100
+      logAbandoned: false
+mybatis:
+  config-location: classpath:mybatis-configuration.xml
+  mapper-locations: classpath:mapper/*.xml
+
+sms:
+  apiKey: 4e23b08fb613daf212765fe13db39481
+  username: cdsw
+  password: asdf12345
+  template: 【高争销售系统】 短信验证码 %s， 有效期五分钟。
+wx:
+  config:
+    url: https://api.weixin.qq.com/sns/jscode2session?appid=s&secret=%s&js_code=%s&grant_type=%s
+    appId: wx81210388ebced979
+    secret: e7e3709012ee9a5505a503d1ed05ec7d
+    grantType: authorization_code
+
+system:
+  order:
+    weight-for-bag: 50
+  plan:
+    # 计划总量
+    total-weight: 100000.0
+    # 计划申请建议量
+    sug-weight: 100.0
+    # 计划申请上下浮动比率
+    sug-weight-float-fatio: 0.1

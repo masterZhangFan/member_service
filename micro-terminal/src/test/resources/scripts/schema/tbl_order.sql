@@ -1,0 +1,32 @@
+DROP TABLE IF EXISTS `tbl_order`;
+CREATE TABLE tbl_order (
+  order_id bigint(11) NOT NULL,
+  unit_price bigint(11)  ,
+  order_number varchar(40)  ,
+  sys_company_id int(11)  ,
+  cust_corp_id int(11) ,
+  order_status int(11)  ,
+  apply_time datetime  ,
+  pickup_time datetime ,
+  applay_package_bages bigint(11) ,
+
+  applay_weight DECIMAL(20,8) ,
+   weight DECIMAL(20,8) ,
+  distribute_method int(11) ,
+  product_type_id int(11) ,
+  transport_method int(11)  ,
+  transport_unit_price bigint(11)  ,
+  transport_company varchar(255) ,
+  qrcode varchar(255) ,
+  review_method int(11)  ,
+  contact varchar(40) ,
+  contact_phone varchar(40)  ,
+  contact_address varchar(255)  ,
+  contact_latitude DECIMAL(20,5) ,
+  contact_longitude DECIMAL(20,5) ,
+  remark varchar(255)  ,
+  amount bigint(11)  ,
+  operator varchar(255) ,
+  PRIMARY KEY (`order_id`),
+
+);
