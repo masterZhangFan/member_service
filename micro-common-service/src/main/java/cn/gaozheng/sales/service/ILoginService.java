@@ -7,14 +7,14 @@ import cn.gaozheng.sales.model.vo.UserInfo;
 import javax.servlet.http.HttpSession;
 
 public interface ILoginService {
-    String sendSms(String phone,HttpSession session) throws Exception ;
+    String sendSms(String phone) throws Exception ;
 
     /**
      * 登录之后返回token
      * @param loginModel
      * @return
      */
-    UserInfo signIn( LoginModel loginModel, HttpSession session);
+    UserInfo signIn( LoginModel loginModel);
 
     /**
      * 微信token

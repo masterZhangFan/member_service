@@ -29,4 +29,6 @@ public class UserInfo{
     private Integer memberLevel;
     //代理信息
     private DelegateInfo delegate;
+    //token
+    private String token;
 }

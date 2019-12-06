@@ -153,7 +153,7 @@ public class ChargeServiceImpl implements ChargeService {
         }
         return userCommission;
     }
-    public Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Integer userId) {
+    public Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId) {
         try {
            TblChargeConfig tblChargeConfig = getChargeConfig();
             TblPayOrder tblPayOrder = this.createOrder(payFor,chargeId,userId);
@@ -222,7 +222,7 @@ public class ChargeServiceImpl implements ChargeService {
         return null;
     }
 
-    private TblPayOrder createOrder(Integer payFor,Integer chargeId,Integer userId){
+    private TblPayOrder createOrder(Integer payFor,Integer chargeId,Long userId){
         TblMemberSetting tblMemberSetting = null;
         String order = getOrderNo();
         TblPayOrder tblPayOrder = new TblPayOrder();
@@ -231,7 +231,7 @@ public class ChargeServiceImpl implements ChargeService {
         tblPayOrder.setPayFor(payFor);
         tblPayOrder.setPayType(1);
         tblPayOrder.setIsPaySuccess(false);
-        tblPayOrder.setUserId(Long.parseLong(userId+""));
+        tblPayOrder.setUserId(userId);
         if (payFor == 1 ){
             tblMemberSetting = getMemberSetting();
             tblPayOrder.setPayMoney(Double.parseDouble(tblMemberSetting.getMemberPrice()+""));

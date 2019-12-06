@@ -95,7 +95,7 @@ public class LoginFilter implements Filter {
                 return true;
             }
         }
-        return false;
+        return true;
     }
 
     private void write(HttpServletResponse httpServletResponse, int code, String msg) throws IOException {

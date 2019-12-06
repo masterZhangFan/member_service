@@ -22,8 +22,8 @@ public class LoginController {
 
     @ApiOperation(value = "短信发送")
     @PostMapping("/sendSms")
-    public String sendSms(@RequestBody LoginModel loginModel, HttpSession session) throws Exception {
-        return loginService.sendSms(loginModel.getPhoneNumber(),session);
+    public String sendSms(@RequestBody LoginModel loginModel) throws Exception {
+        return loginService.sendSms(loginModel.getPhoneNumber());
     }
     @ApiOperation(value = "获取微信token")
     @GetMapping("/wxToken")
@@ -32,8 +32,8 @@ public class LoginController {
     }
     @ApiOperation(value = "登录")
     @PostMapping("/signIn")
-    public UserInfo users( @RequestBody LoginModel loginModel, HttpSession httpSession){
-       UserInfo userInfo = loginService.signIn(loginModel,httpSession);
+    public UserInfo users( @RequestBody LoginModel loginModel){
+       UserInfo userInfo = loginService.signIn(loginModel);
         return userInfo;
     }
 

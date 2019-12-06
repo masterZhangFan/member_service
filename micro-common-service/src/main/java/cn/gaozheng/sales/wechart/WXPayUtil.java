@@ -14,9 +14,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.*;
@@ -62,6 +60,18 @@ public class WXPayUtil {
             throw ex;
         }
 
+    }
+    public static String InputStream2String(InputStream is){
+        StringBuilder sb=new StringBuilder();
+        String line=null;
+        try(BufferedReader br=new BufferedReader(new InputStreamReader(is))){
+            while((line=br.readLine())!=null){
+                sb.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
     }
 
     /**

@@ -12,9 +12,12 @@ import cn.gaozheng.sales.model.po.*;
 import cn.gaozheng.sales.model.vo.*;
 import cn.gaozheng.sales.model.vo.base.EnumUtils;
 import cn.gaozheng.sales.service.ILoginService;
+import cn.gaozheng.sales.service.SmsSendService;
+import cn.gaozheng.sales.service.TokenUtilsServer;
 import cn.gaozheng.sales.service.UserInfoService;
 import cn.gaozheng.sales.utils.EmptyUtil;
 import cn.gaozheng.sales.utils.SendPostUtil;
+import cn.gaozheng.sales.utils.TimeUtils;
 import cn.gaozheng.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 
+import java.util.Date;
 import java.util.List;
 
 import static cn.gaozheng.mini.util.Constants.*;
@@ -44,16 +48,17 @@ public class LoginServiceImpl implements ILoginService {
     UserInfoService userInfoService;
     @Autowired
     TblChargeConfigMapper tblChargeConfigMapper;
+    @Autowired
+    SmsSendService smsSendService;
+    @Autowired
+    TokenUtilsServer tokenUtilsServer;
+
     @Override
-    public String sendSms(String phone,HttpSession session) throws Exception {
+    public String sendSms(String phone) throws Exception {
         String code = RandomUtil.getInstance().flexibleRandom(6);
         log.debug("发送验证码：phone: {}\nmsg: {}", phone, code);
-        SendSms.sendMsg(phone,code);
-        session.setAttribute(SESSION_SMS_CODE_KEY, code);
-        session.setAttribute(SESSION_SMS_START__KEY, System.currentTimeMillis());
-        session.setAttribute(SESSION_SMS_PHONE_NUMBER_KEY,
-                phone);
-        return code;
+        smsSendService.insertSmsInfo(phone,code);
+        return null;
     }
     public String wxToken(String code){
         if (!EmptyUtil.isNotEmpty(code)){
@@ -87,11 +92,11 @@ public class LoginServiceImpl implements ILoginService {
         return tblChargeConfigList.get(0);
     }
     @Override
-    public UserInfo signIn( LoginModel loginModel, HttpSession httpSession){
+    public UserInfo signIn( LoginModel loginModel){
         User user =  null;
         UserInfo userInfo = null;
         if (EmptyUtil.isNotEmpty(loginModel.getPhoneNumber()) && EmptyUtil.isNotEmpty(loginModel.getCode())){
-            signInCheck(loginModel.getPhoneNumber(), loginModel.getCode(), httpSession);
+            signInCheck(loginModel.getPhoneNumber(), loginModel.getCode());
              user = checkUser(loginModel.getPhoneNumber());
         }
         else if (EmptyUtil.isNotEmpty(loginModel.getOpenId())){
@@ -101,14 +106,15 @@ public class LoginServiceImpl implements ILoginService {
             throw new SaleException("登录参数错误");
         }
         userInfo = userInfoService.getUserInfo(user.getUserId());
+        userInfo.setToken(tokenUtilsServer.generateTokenString(userInfo.getUserId(), TimeUtils.formatDateString(new Date())));
         //更新用户openId
-        if (EnumUtils.LoginTypeDelegate.equals(loginModel.getLoginType())){
+        if (EnumUtils.LoginTypeDelegate.equals(loginModel.getLoginType()))
+        {
             if (userInfo.getDelegate() == null) throw new SalesException("不是代理");
         }
-        if (EnumUtils.LoginTypeMember.equals(loginModel.getLoginType())){
-            if (userInfo.getDelegate()!= null){
-                throw new SaleException("请直接代理登录");
-            }
+        if (EnumUtils.LoginTypeMember.equals(loginModel.getLoginType()))
+        {
+            if (userInfo.getDelegate()!= null){throw new SaleException("请直接代理登录"); }
         }
         if (StringUtils.isNotEmpty(loginModel.getOpenId())) {
             //清空
@@ -116,37 +122,10 @@ public class LoginServiceImpl implements ILoginService {
             user.setWxOpenId(loginModel.getOpenId());
             userMapper.updateByPrimaryKey(user);
         }
-        httpSession.setAttribute(SESSION_USER_CACHE_KEY, userInfo);
-        httpSession.removeAttribute(SESSION_SMS_CODE_KEY);
-        httpSession.removeAttribute(SESSION_SMS_START__KEY);
-        httpSession.removeAttribute(SESSION_SMS_PHONE_NUMBER_KEY);
         return userInfo;
     }
-
-
-
-    private static final String msg = "验证码失效，请重新获取";
-    public static void signInCheck(String phoneNumber, String code, HttpSession session) {
-
-        Object o1 = session.getAttribute(SESSION_SMS_CODE_KEY);
-        Object o2 = session.getAttribute(SESSION_SMS_START__KEY);
-        Object o3 = session.getAttribute(SESSION_SMS_PHONE_NUMBER_KEY);
-        if (o1 == null || o2 == null || o3 == null) {
-            throw new ServiceException(msg);
-        }
-        String sendCode = String.valueOf(o1);
-        long sendMillis = Long.parseLong(String.valueOf(o2));
-        String sendPhoneNumber = String.valueOf(o3);
-        if (!sendPhoneNumber.equals(phoneNumber)) {
-            throw new ServiceException("请检查输入的手机号码");
-        }
-        long bygone = (System.currentTimeMillis() - sendMillis) / 1000 / 60;
-        if (bygone > 5) {
-            throw new ServiceException(msg);
-        }
-        if (!sendCode.equals(code)) {
-            throw new ServiceException(msg);
-        }
+    public void signInCheck(String phoneNumber, String code) {
+        smsSendService.checkSmsCode(phoneNumber,code);
     }
     private User checkUser(String phoneNumber){
         User user = userMapper.getUserWithPhoneNumber(phoneNumber);

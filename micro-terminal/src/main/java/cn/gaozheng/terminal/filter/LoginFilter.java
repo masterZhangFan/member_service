@@ -77,13 +77,6 @@ public class LoginFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
-
-        HttpSession session = httpServletRequest.getSession(true);
-        Object user = SessionUtil.getSignInClient(session);
-        if (user == null) {
-            write(httpServletResponse, RespCode.NOT_SIGNED_IN,"未登录不允许该操作");
-            return;
-        }
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

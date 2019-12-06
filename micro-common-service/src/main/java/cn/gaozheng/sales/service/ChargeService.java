@@ -14,7 +14,7 @@ import java.util.Map;
 
 public interface ChargeService {
     List<TblCharge> chargeList();
-    Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Integer userId);
+    Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId);
 
     Boolean chargeSuccess(String payOrder);
 
