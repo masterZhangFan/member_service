@@ -155,7 +155,7 @@ public class ChargeServiceImpl implements ChargeService {
     }
     public Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId) {
         try {
-           TblChargeConfig tblChargeConfig = getChargeConfig();
+            TblChargeConfig tblChargeConfig = getChargeConfig();
             TblPayOrder tblPayOrder = this.createOrder(payFor,chargeId,userId);
             String order = tblPayOrder.getPayOrder();
             String  appid = tblChargeConfig.getAppid();

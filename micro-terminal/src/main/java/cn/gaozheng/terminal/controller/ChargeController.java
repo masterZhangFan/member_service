@@ -63,13 +63,9 @@ public class ChargeController {
     }
     @ApiOperation(value = "下单预支付")
     @GetMapping("/orders")
-    public ServiceStatus orders(HttpServletRequest request,String code, Integer payFor, Integer chargeId){
-        try {
-            Map orderInfo = chargeService.orders(request,code,payFor,chargeId,tokenUtilsServer.uid(request));
-            return new ServiceStatus(ServiceStatus.Status.Success,orderInfo);
-        }catch (Exception e){
-            return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));
-        }
+    public Map orders(HttpServletRequest request,String code, Integer payFor, Integer chargeId){
+        Map orderInfo = chargeService.orders(request,code,payFor,chargeId,tokenUtilsServer.uid(request));
+        return orderInfo;
     }
     @ApiOperation(value = "支付回调")
     @PostMapping("/notify")

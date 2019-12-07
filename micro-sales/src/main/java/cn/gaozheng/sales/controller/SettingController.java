@@ -36,7 +36,7 @@ public class SettingController {
     }
 
     @ApiOperation(value = "获取基础设置")
-    @PostMapping("/getSysConfig")
+    @GetMapping("/getSysConfig")
     public ServiceStatus<TblMemberSetting> getSysConfig(){
         try {
             TblMemberSetting result  = settingService.getSysConfig();

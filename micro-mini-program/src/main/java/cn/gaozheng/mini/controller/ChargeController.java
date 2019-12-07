@@ -57,7 +57,7 @@ public class ChargeController {
     }
     @ApiOperation(value = "下单预支付")
     @GetMapping("/orders")
-    public ServiceStatus orders(HttpSession session,HttpServletRequest httpServletRequest,String code, Integer payFor, Integer chargeId, Integer userId){
+    public ServiceStatus orders(HttpSession session,HttpServletRequest httpServletRequest,String code, Integer payFor, Integer chargeId, Long userId){
         try {
             Map orderInfo = chargeService.orders(httpServletRequest,code,payFor,chargeId,userId);
             return new ServiceStatus(ServiceStatus.Status.Success,orderInfo);
