@@ -32,4 +32,5 @@ public class ShareTempController {
 //            return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));
 //        }
 //    }
+
 }

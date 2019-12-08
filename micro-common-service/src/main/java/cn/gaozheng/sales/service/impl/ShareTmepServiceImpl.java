@@ -5,10 +5,12 @@ import cn.gaozheng.sales.mapper.DomainSetMapper;
 import cn.gaozheng.sales.mapper.TblShareTempMapper;
 import cn.gaozheng.sales.mapper.UserMapper;
 import cn.gaozheng.sales.model.po.DomainSet;
+import cn.gaozheng.sales.model.po.TblMemberSetting;
 import cn.gaozheng.sales.model.po.TblShareTemp;
 import cn.gaozheng.sales.model.po.User;
 import cn.gaozheng.sales.model.vo.ShareInstance;
 import cn.gaozheng.sales.service.ImageService;
+import cn.gaozheng.sales.service.SettingService;
 import cn.gaozheng.sales.service.ShareTempService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +33,8 @@ public class ShareTmepServiceImpl implements ShareTempService{
     DomainSetMapper domainSetMapper;
     @Autowired
     ImageService imageService;
+    @Autowired
+    SettingService settingService;
 
     @Override
     public List<TblShareTemp> shareTemps( Integer shareTempType){
@@ -53,6 +57,24 @@ public class ShareTmepServiceImpl implements ShareTempService{
         BufferedImage backGroudImage = imageService.loadImageLocal(uploadPath+tblShareTemp.getShareTempBigPic());
         imageService.modifyImagetogeter(qrImageBuffer,backGroudImage,tblShareTemp.getShareQrcodePointX(),tblShareTemp.getShareQrcodePointY());
         return null;
+    }
+    @Override
+    public ShareInstance shareInfo(Long userId){
+        User user = userMapper.selectByPrimaryKey(userId);
+        List<DomainSet> domainSets = domainSetMapper.selectAll();
+        if (domainSets == null || domainSets.size() == 0){
+            throw new SaleException("域名没配置");
+        }
+        TblMemberSetting tblMemberSetting = settingService.getSysConfig();
+        DomainSet domainSet = domainSets.get(0);
+        String shareUrl = domainSet.getDomainUrl()+ "reg2/index.php?pk="+getPk(user.getUserName());
+        String title = user.getNickname()+"邀请您加入高级会员";
+        ShareInstance shareInstance =  new ShareInstance();
+        shareInstance.setImgUrl(null);
+        shareInstance.setDesc(tblMemberSetting.getMemberRules());
+        shareInstance.setLink(shareUrl);
+        shareInstance.setTitle(title);
+        return shareInstance;
     }
     private String  getQRCodeUrl(){
         UUID uuid = UUID.randomUUID();

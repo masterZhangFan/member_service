@@ -2,6 +2,7 @@ package cn.gaozheng.sales.controller;
 
 import cn.gaozheng.sales.model.po.TblShareTemp;
 import cn.gaozheng.sales.model.vo.Fan;
+import cn.gaozheng.sales.model.vo.ShareInstance;
 import cn.gaozheng.sales.model.vo.base.ServiceStatus;
 import cn.gaozheng.sales.service.ShareTempService;
 import cn.gaozheng.sales.utils.ExceptionUtil;
@@ -33,4 +34,5 @@ public class ShareTempController {
             return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));
         }
     }
+
 }

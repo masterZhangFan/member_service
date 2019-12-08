@@ -10,4 +10,7 @@ public interface ShareTempService {
     List<TblShareTemp> shareTemps( Integer shareTempType);
     //生成分享实例
     ShareInstance shareInstance(Long userId,Long shareTempId);
+
+    //生成分享实例
+    ShareInstance shareInfo(Long userId);
 }
