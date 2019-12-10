@@ -48,7 +48,7 @@ public class DelegateController {
     }
     @ApiOperation(value = "添加代理")
     @PostMapping("/setDelegate")
-    public ServiceStatus<Boolean> addDelegate(TblDelegate tblDelegate){
+    public ServiceStatus<Boolean> setDelegate(@RequestBody  TblDelegate tblDelegate){
         try {
             Boolean result  = delegateService.setDelegate(tblDelegate);
             return new ServiceStatus(ServiceStatus.Status.Success,result);
@@ -58,9 +58,9 @@ public class DelegateController {
     }
     @ApiOperation(value = "代理详情")
     @PostMapping("/delegate")
-    public ServiceStatus<Boolean> delegate(@RequestBody TblDelegate tblDelegate){
+    public ServiceStatus<DelegateListM> delegate(Long  userId){
         try {
-            Boolean result  = delegateService.setDelegate(tblDelegate);
+            DelegateListM result  = delegateService.delegate(userId);
             return new ServiceStatus(ServiceStatus.Status.Success,result);
         }catch (Exception e){
             return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));

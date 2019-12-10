@@ -13,6 +13,12 @@ public class TblPayOrder {
     /**
      * 支付单号
      */
+    @Column(name = "`pay_order_id`")
+    private Long payOrderId;
+
+    /**
+     * 支付单号
+     */
     @Id
     @Column(name = "`pay_order`")
     private String payOrder;

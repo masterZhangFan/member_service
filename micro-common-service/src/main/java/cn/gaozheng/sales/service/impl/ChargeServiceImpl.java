@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -62,13 +63,23 @@ public class ChargeServiceImpl implements ChargeService {
     public List<TblCharge> chargeList(){
         return tblChargeMapper.chargeList();
     }
+
+    @Override
+    public TblChargeConfig getChargeConfig(){
+        List<TblChargeConfig> tblChargeConfigList =   tblChargeConfigMapper.selectAll();
+        if (tblChargeConfigList == null || tblChargeConfigList.size() == 0) throw new SaleException("无支付配置");
+        return tblChargeConfigList.get(0);
+    }
+
     @Override
     public UserCommissionSet getUserCommissionSet(Long userId){
         User user =userMapper.selectByPrimaryKey(userId);
         if (user == null) throw new SaleException("用户不存在");
        return userCommissionSetMapper.getWithUid(user.getUserName());
     }
+
     @Override
+    @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public Boolean setUserCommissionSet(UserCommssionSetParm userCommssionSetParm, Long userId){
         User user =userMapper.selectByPrimaryKey(userId);
         if (user == null) throw new SaleException("用户不存在");
@@ -93,6 +104,7 @@ public class ChargeServiceImpl implements ChargeService {
        return true;
     }
     @Override
+    @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public Boolean userCommissionApplay( UserCommissionApplayParm userCommissionApplayParm,Long userId){
         userCommissionApplayParm.checkException();
         User user =userMapper.selectByPrimaryKey(userId);
@@ -114,33 +126,6 @@ public class ChargeServiceImpl implements ChargeService {
         insertLog(user,userCommissionApplayParm,userCommission.getTotal());
         return true;
     }
-    private void insertLog(User user,UserCommissionApplayParm userCommissionApplayParm,BigDecimal oldCommission){
-        UserCommissionLog userCommissionLog = new UserCommissionLog();
-        userCommissionLog.setUid(user.getUserName());
-        userCommissionLog.setType(2);//申请
-        userCommissionLog.setDescribe("申请提现");
-        userCommissionLog.setBill(new BigDecimal(userCommissionApplayParm.getAmount()));
-        userCommissionLog.setOldCommission(oldCommission);
-        userCommissionLog.setCreateTime(new Date());
-        userCommissionLog.setStatus(2);
-        userCommissionLogMapper.insert(userCommissionLog);
-
-        UserWithdrawLog userWithdrawLog = new UserWithdrawLog();
-        userWithdrawLog.setUid(userCommissionLog.getUid());
-        userWithdrawLog.setBill(userCommissionLog.getBill());
-        userWithdrawLog.setToAccount("alipay");
-        userWithdrawLog.setToRealname(userCommissionApplayParm.getAlipayRealname());
-        userWithdrawLog.setSubmitRemark(userWithdrawLog.getUid()+"【"+user.getPhone()+"】提现申请");
-        userWithdrawLog.setCreateTime(userCommissionLog.getCreateTime());
-        userWithdrawLog.setStatus(2);
-        userWithdrawLogMapper.insert(userWithdrawLog);
-
-    }
-    private UserWithdrawSet getUserWithdrawSet(){
-        List<UserWithdrawSet> userWithdrawSets = userWithdrawSetMapper.selectAll();
-        if (userWithdrawSets == null || userWithdrawSets.size() == 0) throw new SaleException("未配置用户最大提现数");
-        return userWithdrawSets.get(0);
-    }
     private UserCommission getUserCommission(String uid){
         UserCommission userCommission = userCommissionMapper.getUserCommission(uid);
         if (userCommission == null){
@@ -153,6 +138,8 @@ public class ChargeServiceImpl implements ChargeService {
         }
         return userCommission;
     }
+    @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
+    @Override
     public Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId) {
         try {
             TblChargeConfig tblChargeConfig = getChargeConfig();
@@ -165,7 +152,7 @@ public class ChargeServiceImpl implements ChargeService {
             String notify_url =  tblChargeConfig.getNotifyUrl();
             //页面获取openId接口
             String openId = iLoginService.wxToken(code);//获取openId
-
+            if (openId == null) openId = "";
             //拼接统一下单地址参数
             Map<String, String> paraMap = new HashMap<>();
             //获取请求ip地址
@@ -184,15 +171,15 @@ public class ChargeServiceImpl implements ChargeService {
                 ip = ips[0].trim();
             }
             paraMap.put("appid", appid);
-            paraMap.put("body", "尧舜商城-订单结算");
+            paraMap.put("body",payFor== 1?"助销帮-会员升级":"助消帮-余额充值" );
             paraMap.put("mch_id", mch_id);
             paraMap.put("nonce_str", WXPayUtil.generateNonceStr());
             paraMap.put("openid", openId);
             paraMap.put("out_trade_no", order);//订单号
             paraMap.put("spbill_create_ip", ip);
             paraMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
-            paraMap.put("trade_type", "JSAPI");
-            paraMap.put("notify_url",notify_url);// 此路径是微信服务器调用支付结果通知路径随意写
+
+            paraMap.put("notify_url",notify_url);// 此路径是微信服务器调用支付结果通知路径随意写paraMap.put("trade_type", "JSAPI");
             String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
             paraMap.put("sign", sign);
             String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
@@ -215,14 +202,15 @@ public class ChargeServiceImpl implements ChargeService {
             payMap.put("package", "prepay_id=" + prepay_id);
             String paySign = WXPayUtil.generateSignature(payMap, paternerKey);
             payMap.put("paySign", paySign);
+            tblPayOrderMapper.insert(tblPayOrder);
             return payMap;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-
-    private TblPayOrder createOrder(Integer payFor,Integer chargeId,Long userId){
+    @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
+    public TblPayOrder createOrder(Integer payFor,Integer chargeId,Long userId){
         TblMemberSetting tblMemberSetting = null;
         String order = getOrderNo();
         TblPayOrder tblPayOrder = new TblPayOrder();
@@ -247,29 +235,7 @@ public class ChargeServiceImpl implements ChargeService {
         return tblPayOrder;
     }
     @Override
-    public TblChargeConfig getChargeConfig(){
-       List<TblChargeConfig> tblChargeConfigList =   tblChargeConfigMapper.selectAll();
-       if (tblChargeConfigList == null || tblChargeConfigList.size() == 0) throw new SaleException("无支付配置");
-       return tblChargeConfigList.get(0);
-    }
-    private TblMemberSetting getMemberSetting(){
-        List<TblMemberSetting> tblMemberSettingList = tblMemberSettingMapper.selectAll();
-        if (tblMemberSettingList == null || tblMemberSettingList.size() == 0){
-            throw new SaleException("无效的会员配置");
-        }
-        return tblMemberSettingList.get(0);
-    }
-    public static String getRandomStringByLength(int length) {
-        String base = "0123456789";
-        Random random = new Random();
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < length; i++) {
-            int number = random.nextInt(base.length());
-            sb.append(base.charAt(number));
-        }
-        return sb.toString();
-    }
-    @Override
+    @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public  Boolean chargeSuccess(String payOrder){
         TblPayOrder tblPayOrder = tblPayOrderMapper.getPayorder(payOrder);
         if (tblPayOrder == null) throw new SaleException("订单不存在");
@@ -279,32 +245,7 @@ public class ChargeServiceImpl implements ChargeService {
             throw new SaleException("用户不存在");
         }
         if (EnumUtils.ChargeTypeBalance.equals(tblPayOrder.getPayFor())){
-            //充值
-            FieldAccount fieldAccount = fieldAccountMapper.getFieldAccountWithUserId(tblPayOrder.getUserId());
-            Long beforeShoppingAmout = fieldAccount.getBalance()!= null?fieldAccount.getBalance():0L;
-            Float beforeCallAmount = fieldAccount.getPrice()!= null?fieldAccount.getPrice():0.0F;
-            Long shoppingAmount = tblPayOrder.getShoppingAmount()!= null?Long.parseLong(NumberUtil.multiply( tblPayOrder.getShoppingAmount(), EnumUtils.ShoppingMultiplyParm).toString()):0L;
-            Float callAmount = tblPayOrder.getCallAmount()!= null?tblPayOrder.getCallAmount():0.0F;
-            fieldAccount.setBalance(beforeShoppingAmout+shoppingAmount);
-            fieldAccount.setPrice(beforeCallAmount+callAmount);
-            fieldAccountMapper.updateByPrimaryKey(fieldAccount);
-            ChargeLog chargeLog = new ChargeLog();
-            chargeLog.setChargeeMoneyBefore(beforeShoppingAmout);
-            chargeLog.setChargerMoneyBefore(beforeShoppingAmout);
-            chargeLog.setChargeeCashBefore(NumberUtil.multiply(Double.valueOf(beforeCallAmount.toString()),1L).longValue());
-            chargeLog.setChargerCashBefore(NumberUtil.multiply(Double.valueOf(beforeCallAmount.toString()),1L).longValue());
-            chargeLog.setMoney(shoppingAmount);
-            chargeLog.setCash(new BigDecimal(callAmount.toString()).toBigInteger().longValue());
-            chargeLog.setChargeeMoneyAfter(fieldAccount.getBalance());
-            chargeLog.setChargerMoneyAfter(fieldAccount.getBalance());
-            chargeLog.setChargeeCashAfter(NumberUtil.multiply(Double.valueOf(fieldAccount.getPrice().toString()),1L).longValue());
-            chargeLog.setChargerCashAfter(NumberUtil.multiply(Double.valueOf(fieldAccount.getPrice().toString()),1L).longValue());
-            chargeLog.setTime(new Date());
-            chargeLog.setChargeeId(tblPayOrder.getUserId());
-            chargeLog.setChargeeName(userInfo!=null?userInfo.getPhone():"");
-            chargeLog.setOperateType("充值");
-            chargeLog.setRemark("公众号充值");
-            chargeLog.setOrderId(tblPayOrder.getPayOrder());
+            this.chargeBalance(userInfo.getUserId(),tblPayOrder.getShoppingAmount(),tblPayOrder.getCallAmount(),payOrder,userInfo.getPhone(),"充值","公众号充值");
         }
         else if (EnumUtils.ChargeTypeMember.equals(tblPayOrder.getPayFor())){
             //会员充值
@@ -341,6 +282,7 @@ public class ChargeServiceImpl implements ChargeService {
                     }
                 }
             }
+            this.chargeBalance(userInfo.getUserId(),tblMemberSetting.getShoppingAmountBack(),tblMemberSetting.getCallAmountBack(),payOrder,userInfo.getPhone(),"充值","高级会员充值");
         }
         User user = userMapper.selectByPrimaryKey(tblPayOrder.getUserId());
         userMapper.setMemberLevel(user.getUserName());
@@ -348,9 +290,61 @@ public class ChargeServiceImpl implements ChargeService {
         tblPayOrderMapper.updateByPrimaryKey(tblPayOrder);
         return true;
     }
-    @Transactional
-    public void cashBack(Long fromUserId,Long toUserId,Double cashBack,Integer cashType){
+    @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
+    public void chargeBalance(Long userId,Double shoppingAmountCahrge,Float callAmountCharge,String payOrder,String phone,String type,String remark){
+        FieldAccount fieldAccount = fieldAccountMapper.getFieldAccountWithUserId(userId);
+        Long beforeShoppingAmout = fieldAccount.getBalance()!= null?fieldAccount.getBalance():0L;
+        Float beforeCallAmount = fieldAccount.getPrice()!= null?fieldAccount.getPrice():0.0F;
+        Long shoppingAmount = shoppingAmountCahrge!= null?Long.parseLong(NumberUtil.multiply(shoppingAmountCahrge, EnumUtils.ShoppingMultiplyParm).toString()):0L;
+        Float callAmount = callAmountCharge!= null?callAmountCharge:0.0F;
+        fieldAccount.setBalance(beforeShoppingAmout+shoppingAmount);
+        fieldAccount.setPrice(beforeCallAmount+callAmount);
+        fieldAccountMapper.updateByPrimaryKey(fieldAccount);
+        ChargeLog chargeLog = new ChargeLog();
+        chargeLog.setChargeeMoneyBefore(beforeShoppingAmout);
+        chargeLog.setChargerMoneyBefore(beforeShoppingAmout);
+        chargeLog.setChargeeCashBefore(NumberUtil.multiply(Double.valueOf(beforeCallAmount.toString()),1L).longValue());
+        chargeLog.setChargerCashBefore(NumberUtil.multiply(Double.valueOf(beforeCallAmount.toString()),1L).longValue());
+        chargeLog.setMoney(shoppingAmount);
+        chargeLog.setCash(new BigDecimal(callAmount.toString()).toBigInteger().longValue());
+        chargeLog.setChargeeMoneyAfter(fieldAccount.getBalance());
+        chargeLog.setChargerMoneyAfter(fieldAccount.getBalance());
+        chargeLog.setChargeeCashAfter(NumberUtil.multiply(Double.valueOf(fieldAccount.getPrice().toString()),1L).longValue());
+        chargeLog.setChargerCashAfter(NumberUtil.multiply(Double.valueOf(fieldAccount.getPrice().toString()),1L).longValue());
+        chargeLog.setTime(new Date());
+        chargeLog.setChargeeId(userId);
+        chargeLog.setChargeeName(phone);
+//        "公众号充值";
+//        "充值";
+        chargeLog.setOperateType(type);
+        chargeLog.setRemark(remark);
+        chargeLog.setOrderId(payOrder);
+    }
+    @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
+    public void insertLog(User user,UserCommissionApplayParm userCommissionApplayParm,BigDecimal oldCommission){
+        UserCommissionLog userCommissionLog = new UserCommissionLog();
+        userCommissionLog.setUid(user.getUserName());
+        userCommissionLog.setType(2);//申请
+        userCommissionLog.setDescribe("申请提现");
+        userCommissionLog.setBill(new BigDecimal(userCommissionApplayParm.getAmount()));
+        userCommissionLog.setOldCommission(oldCommission);
+        userCommissionLog.setCreateTime(new Date());
+        userCommissionLog.setStatus(2);
+        userCommissionLogMapper.insert(userCommissionLog);
 
+        UserWithdrawLog userWithdrawLog = new UserWithdrawLog();
+        userWithdrawLog.setUid(userCommissionLog.getUid());
+        userWithdrawLog.setBill(userCommissionLog.getBill());
+        userWithdrawLog.setToAccount("alipay");
+        userWithdrawLog.setToRealname(userCommissionApplayParm.getAlipayRealname());
+        userWithdrawLog.setSubmitRemark(userWithdrawLog.getUid()+"【"+user.getPhone()+"】提现申请");
+        userWithdrawLog.setCreateTime(userCommissionLog.getCreateTime());
+        userWithdrawLog.setStatus(2);
+        userWithdrawLogMapper.insert(userWithdrawLog);
+
+    }
+    @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
+    public void cashBack(Long fromUserId,Long toUserId,Double cashBack,Integer cashType){
         User user = userMapper.selectByPrimaryKey(toUserId);
         UserCommission userCommission = new UserCommission();
         userCommission.setUid(user.getUserName());
@@ -365,6 +359,21 @@ public class ChargeServiceImpl implements ChargeService {
         tblCashBack.setCashBackType(cashType);
         tblCashBackMapper.insert(tblCashBack);
     }
+
+    private UserWithdrawSet getUserWithdrawSet(){
+        List<UserWithdrawSet> userWithdrawSets = userWithdrawSetMapper.selectAll();
+        if (userWithdrawSets == null || userWithdrawSets.size() == 0) throw new SaleException("未配置用户最大提现数");
+        return userWithdrawSets.get(0);
+    }
+
+    private TblMemberSetting getMemberSetting(){
+        List<TblMemberSetting> tblMemberSettingList = tblMemberSettingMapper.selectAll();
+        if (tblMemberSettingList == null || tblMemberSettingList.size() == 0){
+            throw new SaleException("无效的会员配置");
+        }
+        return tblMemberSettingList.get(0);
+    }
+
     /**
      * @function 生成商户订单号/退款单号
      * @date 2015-12-17
@@ -374,5 +383,17 @@ public class ChargeServiceImpl implements ChargeService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         Date date = new Date();
         return sdf.format(date) + getRandomStringByLength(4);
+    }
+    public static String getRandomStringByLength(int length) {
+        synchronized (ChargeService.class+"getRandomStringByLength"){
+            String base = "0123456789";
+            Random random = new Random();
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < length; i++) {
+                int number = random.nextInt(base.length());
+                sb.append(base.charAt(number));
+            }
+            return sb.toString();
+        }
     }
 }

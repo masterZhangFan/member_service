@@ -56,6 +56,7 @@ public class LoginServiceImpl implements ILoginService {
     @Override
     public String sendSms(String phone) throws Exception {
         String code = RandomUtil.getInstance().flexibleRandom(6);
+        SendSms.sendMsg(phone,code);
         log.debug("发送验证码：phone: {}\nmsg: {}", phone, code);
         smsSendService.insertSmsInfo(phone,code);
         return null;
@@ -80,9 +81,6 @@ public class LoginServiceImpl implements ILoginService {
         }
       catch (Exception ex){
 
-      }
-      if (!EmptyUtil.isNotEmpty(openId)){
-          throw new SaleException(errMsg);
       }
         return openId;
     }

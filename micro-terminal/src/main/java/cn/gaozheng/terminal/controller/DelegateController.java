@@ -39,7 +39,7 @@ public class DelegateController {
     }
     @ApiOperation(value = "添加代理")
     @PostMapping("/setDelegate")
-    public Boolean addDelegate(@RequestBody TblDelegate tblDelegate,HttpServletRequest request){
+    public Boolean setDelegate(@RequestBody TblDelegate tblDelegate,HttpServletRequest request){
         Boolean result  = delegateService.setDelegate(tblDelegate);
         tblDelegate.setParentDelegateId(tokenUtilsServer.uid(request));
         return result;

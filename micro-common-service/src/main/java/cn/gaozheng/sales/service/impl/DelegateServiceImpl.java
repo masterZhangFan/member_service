@@ -64,14 +64,16 @@ public class DelegateServiceImpl implements DelegateService {
     public Boolean setDelegate(TblDelegate tblDelegate){
         this.checkDelegate(tblDelegate);
         TblDelegate extit = tblDelegateMapper.selectByPrimaryKey(tblDelegate.getUserId());
-        if (extit != null){
-            tblDelegateMapper.deleteByPrimaryKey(extit);
+        if (extit == null){
+            extit = new TblDelegate();
+            BeanUtils.copyPropertiesIgnoreNullValue(tblDelegate,extit);
+            tblDelegateMapper.insert(tblDelegate) ;
         }
         else {
-            extit = new TblDelegate();
+            BeanUtils.copyPropertiesIgnoreNullValue(tblDelegate,extit);
+            tblDelegateMapper.updateByPrimaryKey(tblDelegate) ;
         }
-        BeanUtils.copyPropertiesIgnoreNullValue(tblDelegate,extit);
-        return tblDelegateMapper.insert(tblDelegate) >0 ;
+        return true;
     }
     /**
      * 获取某用户的代理
