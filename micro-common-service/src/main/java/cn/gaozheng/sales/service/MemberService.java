@@ -15,6 +15,6 @@ public interface MemberService {
 
     List<UserInfo> memberInfoNotIncludeDelegate(MemberListParm req);
 
-    UserInfo memberInfo(Integer userId);
+    UserInfo memberInfo(Long userId);
 
 }

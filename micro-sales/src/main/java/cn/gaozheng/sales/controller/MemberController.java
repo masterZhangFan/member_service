@@ -46,7 +46,7 @@ public class MemberController {
     }
     @ApiOperation(value = "会员信息")
     @GetMapping("/memberInfo")
-    public ServiceStatus<UserInfo> memberInfo( Integer userId){
+    public ServiceStatus<UserInfo> memberInfo(Long userId){
         try {
             UserInfo userInfo  = memberService.memberInfo(userId);
             return new ServiceStatus(ServiceStatus.Status.Success,userInfo);

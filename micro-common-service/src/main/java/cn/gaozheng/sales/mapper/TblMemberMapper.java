@@ -15,5 +15,5 @@ public interface TblMemberMapper extends SalesBaseMapper<TblMember> {
     List<UserInfo> memberInfos( MemberListParm req);
 
     @SelectProvider(type = UserProvider.class,method = "memberInfoNotIncludeDelegate")
-    List<UserInfo> memberInfoNotIncludeDelegate( MemberListParm req);
+    List<UserInfo> memberInfoNotIncludeDelegate(String userNames,String searchText);
 }

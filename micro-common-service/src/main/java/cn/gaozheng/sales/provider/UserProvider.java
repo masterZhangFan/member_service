@@ -87,7 +87,7 @@ public class UserProvider {
         return sql;
     }
 
-    public String memberInfoNotIncludeDelegate( MemberListParm req){
+    public String memberInfoNotIncludeDelegate(String userNames,String searchText){
         String sql = "SELECT\n" +
                 "\tt1.*, t_member.rank as member_level ,IFNULL(t2.cash, 0) as cash,t_user.nickname,t_user.phone\n" +
                 "FROM\n" +
@@ -124,14 +124,11 @@ public class UserProvider {
                 "\t\tt2.user_id\n" +
                 ") AS T2 ON T1.user_id = T2.user_id and T2.user_id not in(SELECT user_id from tbl_delegate)\n" +
                 "WHERE 1 = 1 \n" ;
-        if (req.getMemberLevel()!= null && req.getMemberLevel() >0){
-            sql+="\tand t_member.rank =" + req.getMemberLevel();
+       if (EmptyUtil.isNotEmpty(searchText)){
+            sql+= "\tand t_user.phone like  '%"+ searchText+"%'";
         }
-        if (req.getUserId()!= null && req.getUserId() >0 ){
-            sql+= "\tand t_user.user_id =  "+ req.getUserId();
-        }
-        if (EmptyUtil.isNotEmpty(req.getSearchText())){
-            sql+= "\tand t_user.phone like  '%"+ req.getSearchText()+"%'";
+        if (EmptyUtil.isNotEmpty(userNames)){
+            sql+= "\tand t_user.user_name in("+userNames+")";
         }
         return sql;
     }
