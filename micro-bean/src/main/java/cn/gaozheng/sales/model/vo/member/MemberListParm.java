@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class MemberListParm extends PageRequestModel {
     private Integer memberLevel;
-    private Integer userId;
+    private Long userId;
     private String searchText;
 }
