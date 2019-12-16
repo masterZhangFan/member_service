@@ -40,7 +40,7 @@ public class SmsSendServiceImpl implements SmsSendService {
 
         long diff = new Date().getTime() - tblSmsCode.getSmsSendTime().getTime();
         long min =  diff % nd % nh / nm;
-        if (min>=2){
+        if (min>=5){
             throw new SaleException("验证码已过期");
         }
         return true;

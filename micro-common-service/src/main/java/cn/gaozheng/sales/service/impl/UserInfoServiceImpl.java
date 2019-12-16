@@ -1,15 +1,11 @@
 package cn.gaozheng.sales.service.impl;
 
+import cn.gaozheng.sales.exception.SaleException;
 import cn.gaozheng.sales.mapper.*;
-import cn.gaozheng.sales.model.po.RbTree;
-import cn.gaozheng.sales.model.po.TblDelegate;
-import cn.gaozheng.sales.model.po.TblMember;
-import cn.gaozheng.sales.model.po.User;
-import cn.gaozheng.sales.model.vo.Banlance;
-import cn.gaozheng.sales.model.vo.DelegateInfo;
-import cn.gaozheng.sales.model.vo.Fan;
-import cn.gaozheng.sales.model.vo.UserInfo;
+import cn.gaozheng.sales.model.po.*;
+import cn.gaozheng.sales.model.vo.*;
 import cn.gaozheng.sales.model.vo.base.EnumUtils;
+import cn.gaozheng.sales.service.DelegateService;
 import cn.gaozheng.sales.service.RbTreeService;
 import cn.gaozheng.sales.service.UserInfoService;
 import org.springframework.beans.BeanUtils;
@@ -26,9 +22,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     UserMapper userMapper;
     @Autowired
-    TblMemberMapper tblMemberMapper;
-    @Autowired
     TblDelegateMapper tblDelegateMapper;
+    @Autowired
+    RbIncomeMapper rbIncomeMapper;
+    @Autowired
+    DelegateService delegateService;
     @Override
     public List<Fan> getDirectlyFanWithUserId(Long userId){
         List<Fan> fans = new ArrayList<>();
@@ -68,18 +66,21 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfo;
     }
     private DelegateInfo getDelegateInfo( Long userId){
-        TblDelegate tblDelegate = tblDelegateMapper.selectByPrimaryKey(userId);
+        DelegateListM delegateListM = delegateService.delegate(userId);
         DelegateInfo delegateInfo = null;
-        if (tblDelegate != null){
+        if (delegateListM != null){
+
             delegateInfo = new DelegateInfo();
-            cn.gaozheng.sales.utils.BeanUtils.copyPropertiesIgnoreNullValue(tblDelegate,delegateInfo);
+            cn.gaozheng.sales.utils.BeanUtils.copyPropertiesIgnoreNullValue(delegateListM,delegateInfo);
         }
         return delegateInfo;
     }
     private Integer getMemberInfo(Long userId){
-        TblMember tblMember = tblMemberMapper.selectByPrimaryKey(userId);
-        if (tblMember != null) return EnumUtils.MemberTypeJuniorSenior;
-        return EnumUtils.MemberTypeJunior;
+        RbIncome rbIncome = rbIncomeMapper.getUSerInfo(userId);
+        if (rbIncome == null){
+            throw new SaleException("会员信息不存在");
+        }
+        return rbIncome.getRank();
     }
     private Double getSettlementPrice(Long userId){
         Banlance banlance  = userMapper.getAllSettlementPrice(userId);

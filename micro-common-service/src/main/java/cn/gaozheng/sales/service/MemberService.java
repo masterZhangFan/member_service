@@ -17,4 +17,6 @@ public interface MemberService {
 
     UserInfo memberInfo(Long userId);
 
+    Boolean setMember(Integer rank,Long userId);
+
 }

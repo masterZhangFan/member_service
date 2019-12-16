@@ -1,9 +1,14 @@
 package cn.gaozheng.sales.model.po;
 
+import cn.hutool.db.DaoTemplate;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
+@Data
 @Table(name = "tbl_admin")
 public class TblAdmin {
     @Id
@@ -19,59 +24,7 @@ public class TblAdmin {
     @Column(name = "`admin_token`")
     private String adminToken;
 
-    /**
-     * @return admin_id
-     */
-    public Integer getAdminId() {
-        return adminId;
-    }
+    @Column(name = "`login_time`")
+    private Date loginTime;
 
-    /**
-     * @param adminId
-     */
-    public void setAdminId(Integer adminId) {
-        this.adminId = adminId;
-    }
-
-    /**
-     * @return admin_name
-     */
-    public String getAdminName() {
-        return adminName;
-    }
-
-    /**
-     * @param adminName
-     */
-    public void setAdminName(String adminName) {
-        this.adminName = adminName;
-    }
-
-    /**
-     * @return admin_password
-     */
-    public String getAdminPassword() {
-        return adminPassword;
-    }
-
-    /**
-     * @param adminPassword
-     */
-    public void setAdminPassword(String adminPassword) {
-        this.adminPassword = adminPassword;
-    }
-
-    /**
-     * @return admin_token
-     */
-    public String getAdminToken() {
-        return adminToken;
-    }
-
-    /**
-     * @param adminToken
-     */
-    public void setAdminToken(String adminToken) {
-        this.adminToken = adminToken;
-    }
 }

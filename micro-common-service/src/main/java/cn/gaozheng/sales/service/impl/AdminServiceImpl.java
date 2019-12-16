@@ -4,14 +4,20 @@ import cn.gaozheng.sales.exception.SaleException;
 import cn.gaozheng.sales.mapper.TblAdminMapper;
 import cn.gaozheng.sales.model.po.TblAdmin;
 import cn.gaozheng.sales.service.AdminService;
+import cn.gaozheng.sales.service.TokenUtilsServer;
 import cn.gaozheng.sales.utils.EmptyUtil;
+import cn.gaozheng.sales.utils.TimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class AdminServiceImpl implements AdminService {
     @Autowired
     private TblAdminMapper tblAdminMapper;
+    @Autowired
+    TokenUtilsServer tokenUtilsServer;
 
     @Override
     public TblAdmin login(TblAdmin tblAdmin){
@@ -26,7 +32,11 @@ public class AdminServiceImpl implements AdminService {
         {
             throw new SaleException("用户名或密码错误");
         }
+        String token = tokenUtilsServer.generateTokenString(tblAdmin.getAdminId(), TimeUtils.formatDateString(new Date()));
         tblAdmin.setAdminPassword(null);
+        tblAdmin.setAdminToken(token);
+        tblAdmin.setLoginTime(new Date());
+        tblAdminMapper.updateByPrimaryKey(tblAdmin);
         return tblAdmin;
     }
 

@@ -46,7 +46,7 @@ public class DelegateController {
     }
     @ApiOperation(value = "代理类型")
     @GetMapping("/getDelegateTypes")
-    public List<TblDelegateType> getDelegateTypes(){
-        return  delegateService.getDelegateTypes();
+    public List<TblDelegateType> getDelegateTypes(HttpServletRequest request){
+        return  delegateService.getDelegateTypesByUserId(tokenUtilsServer.uid(request));
     }
 }

@@ -7,6 +7,7 @@ import cn.gaozheng.sales.model.po.RbTree;
 import cn.gaozheng.sales.model.po.TblDelegate;
 import cn.gaozheng.sales.model.po.User;
 import cn.gaozheng.sales.service.RbTreeService;
+import cn.gaozheng.sales.utils.EmptyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,10 @@ public class RbTreeServiceImpl implements RbTreeService {
     UserMapper userMapper;
     @Override
     public List<RbTree> getRbTreeWithLevel(String unames){
-       return rbTreeMapper.getChildrenTrees(unames);
+        if (EmptyUtil.isNotEmpty(unames)){
+            return rbTreeMapper.getChildrenTrees(unames);
+        }
+        return null;
     }
     @Override
     public List<RbTree> getBrTreeDirectly(Long userId){

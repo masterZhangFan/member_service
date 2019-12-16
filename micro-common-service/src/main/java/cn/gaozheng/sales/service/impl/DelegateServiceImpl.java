@@ -18,6 +18,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,6 +38,23 @@ public class DelegateServiceImpl implements DelegateService {
      public List<TblDelegateType> getDelegateTypes(){
          return tblDelegateTypeMapper.selectAll();
      }
+    @Override
+    public List<TblDelegateType> getDelegateTypesByUserId(Long userId){
+        List<TblDelegateType> tblDelegateTypes = tblDelegateTypeMapper.selectAll();
+        DelegateListM delegateListM = this.delegate(userId);
+        if (delegateListM == null){
+            throw new SaleException("此用户不是代理");
+        }
+        List<TblDelegateType> results = new ArrayList<>();
+        for (TblDelegateType item:tblDelegateTypes ) {
+            if (item.getDelegateTypeLevel().compareTo(delegateListM.getDelegateTypeLevel())>0){
+                TblDelegateType copy = new TblDelegateType();
+                BeanUtils.copyPropertiesIgnoreNullValue(item,copy);
+                results.add(item);
+            }
+        }
+        return results;
+    }
      @Override
     public PageInfo<DelegateListM> delegateList( DelegateListParm delegateListParm){
         List<DelegateListM> tblDelegates = tblDelegateMapper.delegateList(delegateListParm);

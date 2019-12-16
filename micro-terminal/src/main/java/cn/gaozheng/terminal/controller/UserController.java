@@ -41,4 +41,11 @@ public class UserController {
         List<Fan> fans = userInfoService.getIndirectFanWithUserId(tokenUtilsServer.uid(request));
         return fans;
     }
+    @ApiOperation(value = "获取用户信息")
+    @GetMapping("/getUserInfo")
+    public UserInfo getUserInfo(HttpServletRequest request){
+        UserInfo userInfo = userInfoService.getUserInfo(tokenUtilsServer.uid(request));
+        return userInfo;
+    }
+
 }

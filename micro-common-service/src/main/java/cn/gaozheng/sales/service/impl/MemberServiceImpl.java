@@ -1,7 +1,8 @@
 package cn.gaozheng.sales.service.impl;
 
 import cn.gaozheng.sales.exception.SaleException;
-import cn.gaozheng.sales.mapper.TblMemberMapper;
+import cn.gaozheng.sales.mapper.RbIncomeMapper;
+import cn.gaozheng.sales.model.po.RbIncome;
 import cn.gaozheng.sales.model.po.RbTree;
 import cn.gaozheng.sales.model.vo.UserInfo;
 import cn.gaozheng.sales.model.vo.member.MemberListParm;
@@ -16,13 +17,13 @@ import java.util.List;
 @Service
 public class MemberServiceImpl implements MemberService {
     @Autowired
-    TblMemberMapper tblMemberMapper;
+    RbIncomeMapper rbIncomeMapper;
     @Autowired
     RbTreeService rbTreeService;
 
     @Override
     public PageInfo<UserInfo> memberInfos( MemberListParm req){
-        List<UserInfo> userInfos = tblMemberMapper.memberInfos(req);
+        List<UserInfo> userInfos = rbIncomeMapper.memberInfos(req);
         PageInfo<UserInfo> pageInfo = new PageInfo<>(userInfos);
         return pageInfo;
     }
@@ -30,11 +31,21 @@ public class MemberServiceImpl implements MemberService {
     public UserInfo memberInfo(Long userId){
         MemberListParm memberListParm = new MemberListParm();
         memberListParm.setUserId(userId);
-        List<UserInfo> userInfos = tblMemberMapper.memberInfos(memberListParm);
+        List<UserInfo> userInfos = rbIncomeMapper.memberInfos(memberListParm);
         if (userInfos == null || userInfos.size() ==  0) {
             throw new SaleException("用户信息不存在");
         }
         return userInfos.get(0);
+    }
+    @Override
+    public Boolean setMember(Integer rank,Long userId){
+        RbIncome rbIncome = rbIncomeMapper.getUSerInfo(userId);
+        if (rbIncome != null){
+            rbIncome.setRank(rank);
+            rbIncomeMapper.updateByPrimaryKey(rbIncome);
+            return true;
+        }
+        return false;
     }
     @Override
     public List<UserInfo> memberInfoNotIncludeDelegate(MemberListParm req){
@@ -56,7 +67,7 @@ public class MemberServiceImpl implements MemberService {
                 }
             }
         }
-        List<UserInfo> userInfos = tblMemberMapper.memberInfoNotIncludeDelegate(userNames,req.getSearchText());
+        List<UserInfo> userInfos = rbIncomeMapper.memberInfoNotIncludeDelegate(userNames,req.getSearchText());
         return userInfos;
     }
 }

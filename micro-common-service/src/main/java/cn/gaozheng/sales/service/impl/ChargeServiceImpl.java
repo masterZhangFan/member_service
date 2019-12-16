@@ -51,6 +51,8 @@ public class ChargeServiceImpl implements ChargeService {
     @Autowired
     DelegateService delegateService;
     @Autowired
+    MemberService memberService;
+    @Autowired
     UserCommissionSetMapper userCommissionSetMapper;
     @Autowired
     UserWithdrawSetMapper userWithdrawSetMapper;
@@ -282,6 +284,7 @@ public class ChargeServiceImpl implements ChargeService {
                     }
                 }
             }
+            memberService.setMember(EnumUtils.MemberTypeJuniorSenior,userInfo.getUserId());
             this.chargeBalance(userInfo.getUserId(),tblMemberSetting.getShoppingAmountBack(),tblMemberSetting.getCallAmountBack(),payOrder,userInfo.getPhone(),"充值","高级会员充值");
         }
         User user = userMapper.selectByPrimaryKey(tblPayOrder.getUserId());

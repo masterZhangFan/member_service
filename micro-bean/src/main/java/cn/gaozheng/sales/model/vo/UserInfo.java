@@ -1,7 +1,6 @@
 package cn.gaozheng.sales.model.vo;
 
 import cn.gaozheng.sales.model.po.TblDelegate;
-import cn.gaozheng.sales.model.po.TblMember;
 import cn.gaozheng.sales.model.po.User;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

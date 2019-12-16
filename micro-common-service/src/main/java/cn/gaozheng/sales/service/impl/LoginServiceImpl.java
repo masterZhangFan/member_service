@@ -1,12 +1,10 @@
 package cn.gaozheng.sales.service.impl;
 
 import cn.gaozheng.mini.config.SendSms;
-import cn.gaozheng.mini.exception.ServiceException;
 import cn.gaozheng.sales.exception.SaleException;
 import cn.gaozheng.sales.exception.SalesException;
 import cn.gaozheng.sales.mapper.TblChargeConfigMapper;
 import cn.gaozheng.sales.mapper.TblDelegateMapper;
-import cn.gaozheng.sales.mapper.TblMemberMapper;
 import cn.gaozheng.sales.mapper.UserMapper;
 import cn.gaozheng.sales.model.po.*;
 import cn.gaozheng.sales.model.vo.*;
@@ -16,8 +14,10 @@ import cn.gaozheng.sales.service.SmsSendService;
 import cn.gaozheng.sales.service.TokenUtilsServer;
 import cn.gaozheng.sales.service.UserInfoService;
 import cn.gaozheng.sales.utils.EmptyUtil;
+import cn.gaozheng.sales.utils.NumberUtils;
 import cn.gaozheng.sales.utils.SendPostUtil;
 import cn.gaozheng.sales.utils.TimeUtils;
+import cn.gaozheng.util.NumberUtil;
 import cn.gaozheng.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
@@ -41,8 +41,6 @@ public class LoginServiceImpl implements ILoginService {
     @Autowired
     UserMapper userMapper;
     @Autowired
-    TblMemberMapper tblMemberMapper;
-    @Autowired
     TblDelegateMapper tblDelegateMapper;
     @Autowired
     UserInfoService userInfoService;
@@ -55,6 +53,10 @@ public class LoginServiceImpl implements ILoginService {
 
     @Override
     public String sendSms(String phone) throws Exception {
+        if (!NumberUtils.isPhone(phone)){
+            throw new SaleException("手机号格式错误");
+        }
+        checkUser(phone);
         String code = RandomUtil.getInstance().flexibleRandom(6);
         SendSms.sendMsg(phone,code);
         log.debug("发送验证码：phone: {}\nmsg: {}", phone, code);

@@ -13,6 +13,8 @@ import java.util.List;
 public interface DelegateService {
     List<TblDelegateType> getDelegateTypes();
 
+    List<TblDelegateType> getDelegateTypesByUserId(Long userId);
+
     Boolean setDelegate(TblDelegate tblDelegate);
 
     PageInfo<DelegateListM> delegateList( DelegateListParm delegateListParm);
