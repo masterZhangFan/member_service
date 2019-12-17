@@ -6,6 +6,7 @@ import cn.gaozheng.sales.model.po.TblChargeConfig;
 import cn.gaozheng.sales.model.po.UserCommissionSet;
 import cn.gaozheng.sales.model.vo.UserInfo;
 import cn.gaozheng.sales.model.vo.base.ServiceStatus;
+import cn.gaozheng.sales.model.vo.charge.ChargeConfig;
 import cn.gaozheng.sales.model.vo.charge.UserCommissionApplayParm;
 import cn.gaozheng.sales.model.vo.charge.UserCommssionSetParm;
 import cn.gaozheng.sales.service.ChargeService;
@@ -42,7 +43,7 @@ public class ChargeController {
     }
     @ApiOperation(value = "支付配置")
     @GetMapping("/payConfig")
-    public TblChargeConfig  payConfig(){
+    public ChargeConfig payConfig(){
         return chargeService.getChargeConfig();
     }
     @ApiOperation(value = "提现配置获取")

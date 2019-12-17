@@ -8,9 +8,7 @@ import cn.gaozheng.sales.utils.ExceptionUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Api(description = "系统设置")
@@ -21,7 +19,7 @@ public class SettingController {
 
     @ApiOperation(value = "基础设置")
     @PostMapping("/sysConfig")
-    public ServiceStatus<Boolean> sysConfig( TblMemberSetting tblMemberSetting ){
+    public ServiceStatus<Boolean> sysConfig(@RequestBody TblMemberSetting tblMemberSetting ){
         try {
             Boolean result  = settingService.sysConfig(tblMemberSetting);
             return new ServiceStatus(ServiceStatus.Status.Success,result);
@@ -31,13 +29,9 @@ public class SettingController {
     }
 
     @ApiOperation(value = "获取基础设置")
-    @PostMapping("/getSysConfig")
-    public ServiceStatus<TblMemberSetting> getSysConfig(){
-        try {
-            TblMemberSetting result  = settingService.getSysConfig();
-            return new ServiceStatus(ServiceStatus.Status.Success,result);
-        }catch (Exception e){
-            return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));
-        }
+    @GetMapping("/getSysConfig")
+    public TblMemberSetting getSysConfig() {
+        TblMemberSetting result = settingService.getSysConfig();
+        return result;
     }
 }

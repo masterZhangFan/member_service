@@ -3,6 +3,7 @@ package cn.gaozheng.sales.service;
 import cn.gaozheng.sales.model.po.TblCharge;
 import cn.gaozheng.sales.model.po.TblChargeConfig;
 import cn.gaozheng.sales.model.po.UserCommissionSet;
+import cn.gaozheng.sales.model.vo.charge.ChargeConfig;
 import cn.gaozheng.sales.model.vo.charge.UserCommissionApplayParm;
 import cn.gaozheng.sales.model.vo.charge.UserCommssionSetParm;
 import com.sun.org.apache.xpath.internal.operations.Bool;
@@ -18,7 +19,7 @@ public interface ChargeService {
 
     Boolean chargeSuccess(String payOrder);
 
-    TblChargeConfig getChargeConfig();
+    ChargeConfig getChargeConfig();
 
     UserCommissionSet getUserCommissionSet(Long userId);
 

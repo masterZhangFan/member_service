@@ -5,6 +5,7 @@ import cn.gaozheng.sales.mapper.*;
 import cn.gaozheng.sales.model.po.*;
 import cn.gaozheng.sales.model.vo.UserInfo;
 import cn.gaozheng.sales.model.vo.base.EnumUtils;
+import cn.gaozheng.sales.model.vo.charge.ChargeConfig;
 import cn.gaozheng.sales.model.vo.charge.UserCommissionApplayParm;
 import cn.gaozheng.sales.model.vo.charge.UserCommssionSetParm;
 import cn.gaozheng.sales.service.*;
@@ -15,6 +16,7 @@ import cn.gaozheng.sales.wechart.WXPayUtil;
 import cn.gaozheng.util.NumberUtil;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,10 +69,16 @@ public class ChargeServiceImpl implements ChargeService {
     }
 
     @Override
-    public TblChargeConfig getChargeConfig(){
+    public ChargeConfig getChargeConfig(){
         List<TblChargeConfig> tblChargeConfigList =   tblChargeConfigMapper.selectAll();
         if (tblChargeConfigList == null || tblChargeConfigList.size() == 0) throw new SaleException("无支付配置");
-        return tblChargeConfigList.get(0);
+        TblChargeConfig tblChargeConfig =  tblChargeConfigList.get(0);
+        ChargeConfig chargeConfig = new ChargeConfig();
+        BeanUtils.copyPropertiesIgnoreNullValue(tblChargeConfig,chargeConfig);
+        chargeConfig.setNonceStr(WXPayUtil.generateNonceStr());
+        chargeConfig.setTimestamp(WXPayUtil.getCurrentTimestamp());
+        chargeConfig.setSignature(null);
+        return chargeConfig;
     }
 
     @Override
@@ -144,7 +152,7 @@ public class ChargeServiceImpl implements ChargeService {
     @Override
     public Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId) {
         try {
-            TblChargeConfig tblChargeConfig = getChargeConfig();
+            ChargeConfig tblChargeConfig = getChargeConfig();
             TblPayOrder tblPayOrder = this.createOrder(payFor,chargeId,userId);
             String order = tblPayOrder.getPayOrder();
             String  appid = tblChargeConfig.getAppid();
