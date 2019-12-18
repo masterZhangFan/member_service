@@ -11,12 +11,12 @@ import cn.gaozheng.sales.model.vo.charge.UserCommssionSetParm;
 import cn.gaozheng.sales.service.*;
 import cn.gaozheng.sales.utils.BeanUtils;
 import cn.gaozheng.sales.utils.EmptyUtil;
+import cn.gaozheng.sales.utils.SecuritySHA1Utils;
 import cn.gaozheng.sales.utils.SendPostUtil;
 import cn.gaozheng.sales.wechart.WXPayUtil;
 import cn.gaozheng.util.NumberUtil;
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +55,8 @@ public class ChargeServiceImpl implements ChargeService {
     @Autowired
     MemberService memberService;
     @Autowired
+    NetworkService networkService;
+    @Autowired
     UserCommissionSetMapper userCommissionSetMapper;
     @Autowired
     UserWithdrawSetMapper userWithdrawSetMapper;
@@ -69,7 +71,7 @@ public class ChargeServiceImpl implements ChargeService {
     }
 
     @Override
-    public ChargeConfig getChargeConfig(){
+    public ChargeConfig getChargeConfig(String url){
         List<TblChargeConfig> tblChargeConfigList =   tblChargeConfigMapper.selectAll();
         if (tblChargeConfigList == null || tblChargeConfigList.size() == 0) throw new SaleException("无支付配置");
         TblChargeConfig tblChargeConfig =  tblChargeConfigList.get(0);
@@ -77,7 +79,45 @@ public class ChargeServiceImpl implements ChargeService {
         BeanUtils.copyPropertiesIgnoreNullValue(tblChargeConfig,chargeConfig);
         chargeConfig.setNonceStr(WXPayUtil.generateNonceStr());
         chargeConfig.setTimestamp(WXPayUtil.getCurrentTimestamp());
-        chargeConfig.setSignature(null);
+        chargeConfig.setAppId(chargeConfig.getAppid());
+        if(EmptyUtil.isNotEmpty(url)){
+
+            String tokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+chargeConfig.getAppId()+"&secret="+chargeConfig.getSecret();
+            String response = networkService.sendGet(tokenUrl);
+            if (!EmptyUtil.isNotEmpty(response)){
+                throw new SaleException("获取access_token失败");
+            }
+            JSONObject results = JSONObject.parseObject(response);
+            if (results.getInteger("errcode") != null && !results.getInteger("errcode").equals(0)){
+                throw new SaleException(results.getString("errmsg"));
+            }
+            String access_token =  results.getString("access_token");
+            String ticketUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+access_token+"&type=jsapi";
+            String ticktResponse =   networkService.sendGet(ticketUrl);
+            if (!EmptyUtil.isNotEmpty(ticktResponse)){
+                throw new SaleException("获取ticket失败");
+            }
+            JSONObject ticktJSON = JSONObject.parseObject(ticktResponse);
+            if (ticktJSON.getInteger("errcode") != null && !ticktJSON.getInteger("errcode").equals(0)){
+                throw new SaleException(ticktJSON.getString("errmsg"));
+            }
+            String ticket = ticktJSON.getString("ticket");
+            String signStr = "jsapi_ticket="+ticket+
+                             "&noncestr="+chargeConfig.getNonceStr()+
+                             "&timestamp="+chargeConfig.getTimestamp().toString()+
+                             "&url="+url;
+            try {
+                String sign = SecuritySHA1Utils.shaEncode(signStr);
+                chargeConfig.setSignature(sign);
+            }
+            catch (Exception ex){
+
+            }
+            if (!EmptyUtil.isNotEmpty(chargeConfig.getSignature())){
+                throw new SaleException("签名失败");
+            }
+
+        }
         return chargeConfig;
     }
 
@@ -152,7 +192,7 @@ public class ChargeServiceImpl implements ChargeService {
     @Override
     public Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId) {
         try {
-            ChargeConfig tblChargeConfig = getChargeConfig();
+            ChargeConfig tblChargeConfig = getChargeConfig(null);
             TblPayOrder tblPayOrder = this.createOrder(payFor,chargeId,userId);
             String order = tblPayOrder.getPayOrder();
             String  appid = tblChargeConfig.getAppid();

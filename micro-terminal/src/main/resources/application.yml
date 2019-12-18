@@ -4,7 +4,7 @@ server:
     key-store: classpath:3167563_scxcyb.cn.pfx
     key-store-password: CnknfOJ8
     enabled: true
-    key-store-type: pfx
+    key-store-type: PKCS12
   http:
     port: 7789
 

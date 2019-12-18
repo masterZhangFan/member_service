@@ -19,7 +19,7 @@ public interface ChargeService {
 
     Boolean chargeSuccess(String payOrder);
 
-    ChargeConfig getChargeConfig();
+    ChargeConfig getChargeConfig(String url);
 
     UserCommissionSet getUserCommissionSet(Long userId);
 

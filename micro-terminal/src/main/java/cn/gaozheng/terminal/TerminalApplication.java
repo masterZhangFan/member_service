@@ -15,7 +15,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 @EnableTransactionManagement
 @EnableSwagger2Doc
 @MapperScan(basePackages = {"cn.gaozheng.mini.mybatis", "cn.gaozheng.sales.mapper"})
-public class TerminalApplication {
+public class TerminalApplication{
 
     public static void main(String[] args) {
         SpringApplication.run(TerminalApplication.class, args);

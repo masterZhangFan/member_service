@@ -43,8 +43,8 @@ public class ChargeController {
     }
     @ApiOperation(value = "支付配置")
     @GetMapping("/payConfig")
-    public ChargeConfig payConfig(){
-        return chargeService.getChargeConfig();
+    public ChargeConfig payConfig(String url){
+        return chargeService.getChargeConfig(url);
     }
     @ApiOperation(value = "提现配置获取")
     @GetMapping("/getUserCommissionSet")
