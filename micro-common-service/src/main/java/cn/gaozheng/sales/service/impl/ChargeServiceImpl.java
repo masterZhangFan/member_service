@@ -81,7 +81,6 @@ public class ChargeServiceImpl implements ChargeService {
         chargeConfig.setTimestamp(WXPayUtil.getCurrentTimestamp());
         chargeConfig.setAppId(chargeConfig.getAppid());
         if(EmptyUtil.isNotEmpty(url)){
-
             String tokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+chargeConfig.getAppId()+"&secret="+chargeConfig.getSecret();
             String response = networkService.sendGet(tokenUrl);
             if (!EmptyUtil.isNotEmpty(response)){
@@ -188,9 +187,79 @@ public class ChargeServiceImpl implements ChargeService {
         }
         return userCommission;
     }
+
+    public Map getOrders(String code,Integer payFor,Integer chargeId,Long userId) {
+        String errMsg = null;
+        try {
+            User userInfo =  userMapper.selectByPrimaryKey(userId);
+            if (userInfo == null){
+                throw new SaleException("用户不存在");
+            }
+            ChargeConfig tblChargeConfig = getChargeConfig(null);
+            TblPayOrder tblPayOrder = this.createOrder(payFor,chargeId,userId);
+            String order = tblPayOrder.getPayOrder();
+            String  appid = tblChargeConfig.getAppid();
+            String  mch_id= tblChargeConfig.getMchId();
+            String  paternerKey=  tblChargeConfig.getApikey();
+            String notify_url =  tblChargeConfig.getNotifyUrl();
+            //页面获取openId接口
+//            String openId = iLoginService.wxToken(code);//获取openId
+//            if (!EmptyUtil.isNotEmpty(openId)){
+//                throw new SaleException("openId获取失败");
+//            }
+            //拼接统一下单地址参数
+            Map<String, String> paraMap = new HashMap<>();
+            //获取请求ip地址
+            paraMap.put("appid", appid);
+            paraMap.put("body",payFor== 1?"助销帮-会员升级":"助消帮-余额充值" );
+            paraMap.put("mch_id", mch_id);
+            paraMap.put("nonce_str", WXPayUtil.generateNonceStr());
+            paraMap.put("openid", userInfo.getWxOpenId());
+            paraMap.put("out_trade_no", order);//订单号
+            paraMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
+            paraMap.put("trade_type", "JSAPI");
+            paraMap.put("notify_url",notify_url);// 此路径是微信服务器调用支付结果通知路径随意写
+            String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
+            paraMap.put("sign", sign);
+            String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
+
+            // 统一下单 https://api.mch.weixin.qq.com/pay/unifiedorder
+            String unifiedorder_url =" https://api.mch.weixin.qq.com/pay/unifiedorder";
+            String xmlStr = SendPostUtil.sendPost(unifiedorder_url, xml,null);//发送post请求"统一下单接口"返回预支付id:prepay_id
+            //以下内容是返回前端页面的json数据
+            String prepay_id = "";//预支付id
+            if (xmlStr.indexOf("SUCCESS") != -1) {
+                Map<String, String> map = WXPayUtil.xmlToMap(xmlStr);
+                prepay_id =  map.get("prepay_id");
+            }
+            else {
+                System.out.printf(xmlStr);
+                throw new SaleException("签名失败");
+            }
+            Map<String, String> payMap = new HashMap<String, String>();
+            payMap.put("appId", appid);
+            payMap.put("timeStamp", WXPayUtil.getCurrentTimestamp() + "");
+            payMap.put("nonceStr", WXPayUtil.generateNonceStr());
+            payMap.put("signType", "MD5");
+            payMap.put("package", "prepay_id=" + prepay_id);
+            String paySign = WXPayUtil.generateSignature(payMap, paternerKey);
+            payMap.put("paySign", paySign);
+            payMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
+            System.out.printf("code:"+code);
+            System.out.printf(xmlStr);
+            System.out.print(payMap);
+            tblPayOrderMapper.insert(tblPayOrder);
+            return payMap;
+        } catch (Exception e) {
+            errMsg= e.getMessage();
+            e.printStackTrace();
+        }
+        throw new SaleException(errMsg+":"+code+":payFor"+chargeId+";"+userId);
+    }
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     @Override
     public Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId) {
+        String errMsg = null;
         try {
             ChargeConfig tblChargeConfig = getChargeConfig(null);
             TblPayOrder tblPayOrder = this.createOrder(payFor,chargeId,userId);
@@ -228,21 +297,20 @@ public class ChargeServiceImpl implements ChargeService {
             paraMap.put("out_trade_no", order);//订单号
             paraMap.put("spbill_create_ip", ip);
             paraMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
-
-            paraMap.put("notify_url",notify_url);// 此路径是微信服务器调用支付结果通知路径随意写paraMap.put("trade_type", "JSAPI");
+            paraMap.put("trade_type", "JSAPI");
+            paraMap.put("notify_url",notify_url);// 此路径是微信服务器调用支付结果通知路径随意写
             String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
             paraMap.put("sign", sign);
             String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
 
             // 统一下单 https://api.mch.weixin.qq.com/pay/unifiedorder
             String unifiedorder_url =" https://api.mch.weixin.qq.com/pay/unifiedorder";
-
             String xmlStr = SendPostUtil.sendPost(unifiedorder_url, xml,null);//发送post请求"统一下单接口"返回预支付id:prepay_id
             //以下内容是返回前端页面的json数据
             String prepay_id = "";//预支付id
             if (xmlStr.indexOf("SUCCESS") != -1) {
                 Map<String, String> map = WXPayUtil.xmlToMap(xmlStr);
-                prepay_id = (String) map.get("prepay_id");
+                prepay_id =  map.get("prepay_id");
             }
             Map<String, String> payMap = new HashMap<String, String>();
             payMap.put("appId", appid);
@@ -252,12 +320,17 @@ public class ChargeServiceImpl implements ChargeService {
             payMap.put("package", "prepay_id=" + prepay_id);
             String paySign = WXPayUtil.generateSignature(payMap, paternerKey);
             payMap.put("paySign", paySign);
+            payMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
+            System.out.printf("code:"+code);
+            System.out.printf(xmlStr);
+            System.out.print(payMap);
             tblPayOrderMapper.insert(tblPayOrder);
             return payMap;
         } catch (Exception e) {
+            errMsg= e.getMessage();
             e.printStackTrace();
         }
-        return null;
+        throw new SaleException(errMsg+":"+code+":payFor"+chargeId+";"+userId);
     }
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public TblPayOrder createOrder(Integer payFor,Integer chargeId,Long userId){

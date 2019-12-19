@@ -71,18 +71,27 @@ public class LoginServiceImpl implements ILoginService {
         String  appid = tblChargeConfig.getAppid();
         String  secret=  tblChargeConfig.getSecret();
         //页面获取openId接口
-        String getopenid_url = "https://api.weixin.qq.com/sns/oauth2/access_token";
+        String getopenid_url = "https://api.weixin.qq.com/sns/oauth2/access_token?";
         String param =
                 "appid=" + appid + "&secret=" + secret + "&code=" + code + "&grant_type=authorization_code";
         String errMsg = "获取失败";
+        getopenid_url = getopenid_url+param;
         String openId = null;
         try {
-            String openIdStr = SendPostUtil.sendGet(getopenid_url,param,null);
+            String openIdStr = SendPostUtil.sendGet(getopenid_url,null,null);
             JSONObject json = JSONObject.parseObject(openIdStr);//转成Json格式
-            openId = json.getString("openid");//获取openId
+            if ( json.getInteger("errcode")== null || json.getInteger("errcode").equals(0)){
+                openId = json.getString("openid");//获取openId
+            }
+           else {
+               System.out.printf(getopenid_url);
+               System.out.printf(json.getString("errmsg"));
+               throw new SaleException(json.getString("errmsg"));
+            }
+
         }
       catch (Exception ex){
-
+          throw new SaleException(ex.getMessage());
       }
         return openId;
     }

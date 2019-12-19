@@ -17,6 +17,8 @@ public interface ChargeService {
     List<TblCharge> chargeList();
     Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId);
 
+    Map getOrders(String code,Integer payFor,Integer chargeId,Long userId);
+
     Boolean chargeSuccess(String payOrder);
 
     ChargeConfig getChargeConfig(String url);
