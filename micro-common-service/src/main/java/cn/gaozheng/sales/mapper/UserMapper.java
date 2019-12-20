@@ -18,7 +18,7 @@ public interface UserMapper extends SalesBaseMapper<User> {
     @Select("select *from user where wx_open_id = #{openId}")
     User getUserWithOpenId(String openId);
 
-    @Update("update user set wx_open_id = #{openId}")
+    @Update("update user set wx_open_id  = null where wx_open_id  = #{openId}")
     Integer clearOpenId(String openId);
 
     @Select("SELECT SUM(IFNULL(total,settlement)) as cash FROM `user_commission` t1 JOIN `user` t2\n" +

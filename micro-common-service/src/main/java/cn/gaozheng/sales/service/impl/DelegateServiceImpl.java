@@ -73,10 +73,10 @@ public class DelegateServiceImpl implements DelegateService {
         DelegateListParm delegateListParm = new DelegateListParm();
         delegateListParm.setUserId(userId);
         List<DelegateListM> tblDelegates = tblDelegateMapper.delegateList(delegateListParm);
-        if (tblDelegates == null || tblDelegates.size() == 0){
-            throw new SaleException("无代理信息");
+        if (tblDelegates != null && tblDelegates.size() > 0){
+            return tblDelegates.get(0);
         }
-        return tblDelegates.get(0);
+        return null;
     }
     @Override
     public Boolean setDelegate(TblDelegate tblDelegate){

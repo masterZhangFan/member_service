@@ -13,6 +13,7 @@ import cn.gaozheng.sales.service.ChargeService;
 import cn.gaozheng.sales.service.TokenUtilsServer;
 import cn.gaozheng.sales.utils.ExceptionUtil;
 import cn.gaozheng.sales.wechart.WXPayUtil;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +65,8 @@ public class ChargeController {
     }
     @ApiOperation(value = "下单预支付")
     @GetMapping("/orders")
-    public Map orders(HttpServletRequest request,String code, Integer payFor, Integer chargeId){
-        Map orderInfo = chargeService.orders(request,code,payFor,chargeId,tokenUtilsServer.uid(request));
+    public Map orders(HttpServletRequest request, Integer payFor, Integer chargeId){
+        Map orderInfo = chargeService.orders(request,payFor,chargeId,tokenUtilsServer.uid(request));
         return orderInfo;
     }
     @ApiOperation(value = "支付回调")
@@ -108,11 +109,7 @@ public class ChargeController {
     }
     @ApiOperation(value = "下单成功")
     @GetMapping("/chargeSuccess")
-    public ServiceStatus chargeSuccess(String payOrder){
-        try {
-            return new ServiceStatus(ServiceStatus.Status.Success, chargeService.chargeSuccess(payOrder));
-        }catch (Exception e){
-            return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));
-        }
+    public boolean chargeSuccess( String payOrder){
+        return chargeService.chargeSuccess(payOrder);
     }
 }

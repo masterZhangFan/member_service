@@ -9,10 +9,7 @@ import cn.gaozheng.sales.mapper.UserMapper;
 import cn.gaozheng.sales.model.po.*;
 import cn.gaozheng.sales.model.vo.*;
 import cn.gaozheng.sales.model.vo.base.EnumUtils;
-import cn.gaozheng.sales.service.ILoginService;
-import cn.gaozheng.sales.service.SmsSendService;
-import cn.gaozheng.sales.service.TokenUtilsServer;
-import cn.gaozheng.sales.service.UserInfoService;
+import cn.gaozheng.sales.service.*;
 import cn.gaozheng.sales.utils.EmptyUtil;
 import cn.gaozheng.sales.utils.NumberUtils;
 import cn.gaozheng.sales.utils.SendPostUtil;
@@ -50,6 +47,8 @@ public class LoginServiceImpl implements ILoginService {
     SmsSendService smsSendService;
     @Autowired
     TokenUtilsServer tokenUtilsServer;
+    @Autowired
+    NetworkService networkService;
 
     @Override
     public String sendSms(String phone) throws Exception {
@@ -74,26 +73,20 @@ public class LoginServiceImpl implements ILoginService {
         String getopenid_url = "https://api.weixin.qq.com/sns/oauth2/access_token?";
         String param =
                 "appid=" + appid + "&secret=" + secret + "&code=" + code + "&grant_type=authorization_code";
-        String errMsg = "获取失败";
         getopenid_url = getopenid_url+param;
-        String openId = null;
+        System.out.printf("路径===========>:\n"+getopenid_url+"\n");
         try {
-            String openIdStr = SendPostUtil.sendGet(getopenid_url,null,null);
+            String openIdStr = networkService.sendGet(getopenid_url);
+            System.out.printf("结果===========>:\n"+openIdStr+"\n");
             JSONObject json = JSONObject.parseObject(openIdStr);//转成Json格式
-            if ( json.getInteger("errcode")== null || json.getInteger("errcode").equals(0)){
-                openId = json.getString("openid");//获取openId
+            if (json.getInteger("errcode")== null || json.getInteger("errcode").equals(0)){
+                return json.getString("openid");//获取openId
             }
-           else {
-               System.out.printf(getopenid_url);
-               System.out.printf(json.getString("errmsg"));
-               throw new SaleException(json.getString("errmsg"));
-            }
-
         }
       catch (Exception ex){
           throw new SaleException(ex.getMessage());
       }
-        return openId;
+      throw new SaleException("获取失败");
     }
     private TblChargeConfig getChargeConfig(){
         List<TblChargeConfig> tblChargeConfigList =   tblChargeConfigMapper.selectAll();

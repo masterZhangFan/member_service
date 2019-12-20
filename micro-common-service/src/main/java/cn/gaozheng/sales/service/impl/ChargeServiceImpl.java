@@ -64,6 +64,8 @@ public class ChargeServiceImpl implements ChargeService {
     UserCommissionLogMapper userCommissionLogMapper;
     @Autowired
     UserWithdrawLogMapper userWithdrawLogMapper;
+    @Autowired
+    ChargeLogMapper chargeLogMapper;
 
     @Override
     public List<TblCharge> chargeList(){
@@ -188,7 +190,7 @@ public class ChargeServiceImpl implements ChargeService {
         return userCommission;
     }
 
-    public Map getOrders(String code,Integer payFor,Integer chargeId,Long userId) {
+    public Map getOrders(String openId,Integer payFor,Integer chargeId,Long userId) {
         String errMsg = null;
         try {
             User userInfo =  userMapper.selectByPrimaryKey(userId);
@@ -203,10 +205,6 @@ public class ChargeServiceImpl implements ChargeService {
             String  paternerKey=  tblChargeConfig.getApikey();
             String notify_url =  tblChargeConfig.getNotifyUrl();
             //页面获取openId接口
-//            String openId = iLoginService.wxToken(code);//获取openId
-//            if (!EmptyUtil.isNotEmpty(openId)){
-//                throw new SaleException("openId获取失败");
-//            }
             //拼接统一下单地址参数
             Map<String, String> paraMap = new HashMap<>();
             //获取请求ip地址
@@ -214,7 +212,7 @@ public class ChargeServiceImpl implements ChargeService {
             paraMap.put("body",payFor== 1?"助销帮-会员升级":"助消帮-余额充值" );
             paraMap.put("mch_id", mch_id);
             paraMap.put("nonce_str", WXPayUtil.generateNonceStr());
-            paraMap.put("openid", userInfo.getWxOpenId());
+            paraMap.put("openid", openId);
             paraMap.put("out_trade_no", order);//订单号
             paraMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
             paraMap.put("trade_type", "JSAPI");
@@ -245,7 +243,6 @@ public class ChargeServiceImpl implements ChargeService {
             String paySign = WXPayUtil.generateSignature(payMap, paternerKey);
             payMap.put("paySign", paySign);
             payMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
-            System.out.printf("code:"+code);
             System.out.printf(xmlStr);
             System.out.print(payMap);
             tblPayOrderMapper.insert(tblPayOrder);
@@ -254,24 +251,25 @@ public class ChargeServiceImpl implements ChargeService {
             errMsg= e.getMessage();
             e.printStackTrace();
         }
-        throw new SaleException(errMsg+":"+code+":payFor"+chargeId+";"+userId);
+        throw new SaleException("下单失败");
     }
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     @Override
-    public Map orders( HttpServletRequest request, String code,Integer payFor,Integer chargeId,Long userId) {
+    public Map orders( HttpServletRequest request,Integer payFor,Integer chargeId,Long userId) {
         String errMsg = null;
         try {
+            User userInfo =  userMapper.selectByPrimaryKey(userId);
+            if (userInfo == null){
+                throw new SaleException("用户不存在");
+            }
             ChargeConfig tblChargeConfig = getChargeConfig(null);
             TblPayOrder tblPayOrder = this.createOrder(payFor,chargeId,userId);
             String order = tblPayOrder.getPayOrder();
             String  appid = tblChargeConfig.getAppid();
             String  mch_id= tblChargeConfig.getMchId();
-            String  secret=  tblChargeConfig.getSecret();
             String  paternerKey=  tblChargeConfig.getApikey();
             String notify_url =  tblChargeConfig.getNotifyUrl();
             //页面获取openId接口
-            String openId = iLoginService.wxToken(code);//获取openId
-            if (openId == null) openId = "";
             //拼接统一下单地址参数
             Map<String, String> paraMap = new HashMap<>();
             //获取请求ip地址
@@ -293,7 +291,7 @@ public class ChargeServiceImpl implements ChargeService {
             paraMap.put("body",payFor== 1?"助销帮-会员升级":"助消帮-余额充值" );
             paraMap.put("mch_id", mch_id);
             paraMap.put("nonce_str", WXPayUtil.generateNonceStr());
-            paraMap.put("openid", openId);
+            paraMap.put("openid", userInfo.getWxOpenId());
             paraMap.put("out_trade_no", order);//订单号
             paraMap.put("spbill_create_ip", ip);
             paraMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
@@ -321,16 +319,15 @@ public class ChargeServiceImpl implements ChargeService {
             String paySign = WXPayUtil.generateSignature(payMap, paternerKey);
             payMap.put("paySign", paySign);
             payMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
-            System.out.printf("code:"+code);
             System.out.printf(xmlStr);
             System.out.print(payMap);
             tblPayOrderMapper.insert(tblPayOrder);
             return payMap;
         } catch (Exception e) {
             errMsg= e.getMessage();
-            e.printStackTrace();
+            throw new SaleException(errMsg);
         }
-        throw new SaleException(errMsg+":"+code+":payFor"+chargeId+";"+userId);
+
     }
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public TblPayOrder createOrder(Integer payFor,Integer chargeId,Long userId){
@@ -343,7 +340,7 @@ public class ChargeServiceImpl implements ChargeService {
         tblPayOrder.setPayType(1);
         tblPayOrder.setIsPaySuccess(false);
         tblPayOrder.setUserId(userId);
-        if (payFor == 1 ){
+        if (payFor == EnumUtils.ChargeTypeMember ){
             tblMemberSetting = getMemberSetting();
             tblPayOrder.setPayMoney(Double.parseDouble(tblMemberSetting.getMemberPrice()+""));
         }
@@ -354,6 +351,8 @@ public class ChargeServiceImpl implements ChargeService {
             TblCharge tblCharge = tblChargeMapper.selectByPrimaryKey(chargeId);
             if (tblCharge == null) throw new SaleException("充值配置错误");
             tblPayOrder.setPayMoney(tblCharge.getChargeAmount());
+            tblPayOrder.setCallAmount(tblCharge.getCallAmount()!=null?tblCharge.getCallAmount().floatValue():null);
+            tblPayOrder.setShoppingAmount(tblCharge.getShoppingAmount());
         }
         return tblPayOrder;
     }
@@ -362,7 +361,7 @@ public class ChargeServiceImpl implements ChargeService {
     public  Boolean chargeSuccess(String payOrder){
         TblPayOrder tblPayOrder = tblPayOrderMapper.getPayorder(payOrder);
         if (tblPayOrder == null) throw new SaleException("订单不存在");
-
+        if (tblPayOrder.getIsPaySuccess())return true;
         UserInfo userInfo = userInfoService.getUserInfo(tblPayOrder.getUserId());
         if (userInfo == null) {
             throw new SaleException("用户不存在");
@@ -419,7 +418,7 @@ public class ChargeServiceImpl implements ChargeService {
         FieldAccount fieldAccount = fieldAccountMapper.getFieldAccountWithUserId(userId);
         Long beforeShoppingAmout = fieldAccount.getBalance()!= null?fieldAccount.getBalance():0L;
         Float beforeCallAmount = fieldAccount.getPrice()!= null?fieldAccount.getPrice():0.0F;
-        Long shoppingAmount = shoppingAmountCahrge!= null?Long.parseLong(NumberUtil.multiply(shoppingAmountCahrge, EnumUtils.ShoppingMultiplyParm).toString()):0L;
+        Long shoppingAmount = shoppingAmountCahrge!= null?NumberUtil.multiply(shoppingAmountCahrge, EnumUtils.ShoppingMultiplyParm).longValue():0L;
         Float callAmount = callAmountCharge!= null?callAmountCharge:0.0F;
         fieldAccount.setBalance(beforeShoppingAmout+shoppingAmount);
         fieldAccount.setPrice(beforeCallAmount+callAmount);
@@ -442,7 +441,13 @@ public class ChargeServiceImpl implements ChargeService {
 //        "充值";
         chargeLog.setOperateType(type);
         chargeLog.setRemark(remark);
+        chargeLog.setWay(1);
+        chargeLog.setChargeeLevel(0);
         chargeLog.setOrderId(payOrder);
+        chargeLog.setAgentId(1);
+        chargeLog.setChargerLevel(0);
+        chargeLog.setChargerId(0);
+        chargeLogMapper.insert(chargeLog);
     }
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public void insertLog(User user,UserCommissionApplayParm userCommissionApplayParm,BigDecimal oldCommission){

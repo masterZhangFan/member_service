@@ -28,8 +28,8 @@ public class TestController {
     ChargeService chargeService;
     @ApiOperation(value = "测试")
     @GetMapping("/test")
-    public Map test(String code,Integer payFor,Integer chargeId,Long userId){
-        return chargeService.getOrders(code,payFor,chargeId,userId);
+    public Map test(String openId,Integer payFor,Integer chargeId,Long userId){
+        return chargeService.getOrders(openId,payFor,chargeId,userId);
     }
 
 
