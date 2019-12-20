@@ -46,7 +46,7 @@ public class DelegateProvider {
             sql+= " AND t_delegate_type.delegate_type_id = " +delegateListParm.getDelegateTypeId();
         }
         if (delegateListParm.getParentDelegateId() != null && delegateListParm.getParentDelegateId() > 0){
-            sql+= " AND t_delegate.delegate_type_id = " +delegateListParm.getDelegateTypeId();
+            sql+= " AND t_delegate.parent_delegate_id = " +delegateListParm.getParentDelegateId();
         }
         if (delegateListParm.getUserId() != null && delegateListParm.getUserId() > 0){
             sql+= " AND t_delegate.user_id = " +delegateListParm.getUserId();
