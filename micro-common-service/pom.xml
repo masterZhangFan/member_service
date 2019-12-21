@@ -17,7 +17,11 @@
             <artifactId>micro-util</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>3.8.0</version>
+        </dependency>
         <dependency>
             <groupId>cn.gaozheng</groupId>
             <artifactId>micro-bean</artifactId>

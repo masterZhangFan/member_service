@@ -16,4 +16,6 @@ public class EnumUtils {
     public static Integer CashBackTypeFirstLevel = 1;//一级会员返现
     public static Integer CashBackTypeSecondLevel = 2;//二级会员返现
     public static Integer CashBackTypeDelegate = 3;//代理返现
+
+    public static String defaultProtrailt = "/icon/user/default.png";
 }

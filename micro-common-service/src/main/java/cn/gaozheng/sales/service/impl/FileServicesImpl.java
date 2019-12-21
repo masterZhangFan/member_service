@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -54,6 +56,21 @@ public class FileServicesImpl implements FileService {
         tblFileInfo.setPath(url);
         tblFileInfoMapper.insert(tblFileInfo);
         return tblFileInfo;
+    }
+    @Override
+    public String saveTempImage( BufferedImage bufferedImage,String fileName){
+        String fileDir =  uploadPath+"temp__";
+        try {
+            if (!new File(fileDir).exists()){
+                new File(fileDir).mkdirs();
+            }
+            File outputfile = new File(fileDir+fileName);
+            ImageIO.write(bufferedImage, "png", outputfile);
+        }
+        catch (Exception ex){
+            return null;
+        }
+        return fileDir+fileName;
     }
     /*上传临时文件*/
     @Override

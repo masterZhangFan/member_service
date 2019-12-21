@@ -12,8 +12,8 @@ public class SaleStringUtils {
         return md5;
     }
 
-    public static String base64Encode(byte[] bstr) {
-        return new sun.misc.BASE64Encoder().encode(bstr);
+    public static String base64Encode(String str) {
+        return new sun.misc.BASE64Encoder().encode(str.getBytes());
     }
     public static byte[] base64Decode(String str) {
         byte[] bt = null;

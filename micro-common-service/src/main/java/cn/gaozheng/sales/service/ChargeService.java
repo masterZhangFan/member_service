@@ -18,7 +18,7 @@ public interface ChargeService {
 
     Map orders( HttpServletRequest request,Integer payFor,Integer chargeId,Long userId);
 
-    Boolean chargeSuccess(String payOrder);
+    Boolean chargeSuccess(String payOrder,String transaction_id);
 
     ChargeConfig getChargeConfig(String url);
 

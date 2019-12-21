@@ -86,11 +86,12 @@ public class ChargeController {
             if (notifyMap.get("result_code").equals("SUCCESS")) {
                 String ordersSn = notifyMap.get("out_trade_no");// 商户订单号
                 String amountpaid = notifyMap.get("total_fee");// 实际支付的订单金额:单位 分
+                String transaction_id =  notifyMap.get("transaction_id");//微信支付单号
                 BigDecimal amountPay = (new BigDecimal(amountpaid).divide(new BigDecimal("100"))).setScale(2);// 将分转换成元-实际支付金额:元
                 /*
                  * 以下是自己的业务处理------仅做参考 更新order对应字段/已支付金额/状态码
                  */
-                chargeService.chargeSuccess(ordersSn);
+                chargeService.chargeSuccess(ordersSn,transaction_id);
                 System.out.println("===notify===回调方法已经被调！！！");
 
             }
@@ -114,6 +115,6 @@ public class ChargeController {
     @ApiOperation(value = "下单成功")
     @GetMapping("/chargeSuccess")
     public boolean chargeSuccess( String payOrder){
-        return chargeService.chargeSuccess(payOrder);
+        return chargeService.chargeSuccess(payOrder,null);
     }
 }

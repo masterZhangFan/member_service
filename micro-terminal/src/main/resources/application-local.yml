@@ -33,4 +33,4 @@ spring:
 system:
   default:
     file:
-      upload-path: C:/Users/lc593/Desktop/upload
+      upload-path:/var/www/html/icallvtsnew

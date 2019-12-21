@@ -30,4 +30,6 @@ public class UserInfo{
     private DelegateInfo delegate;
     //token
     private String token;
+    /*头像*/
+    private String icon;
 }

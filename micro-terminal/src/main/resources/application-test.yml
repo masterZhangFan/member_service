@@ -27,4 +27,4 @@ spring:
 system:
   default:
     file:
-      upload-path: /opt/files/sales/
+      upload-path: /var/www/html/icallvtsnew

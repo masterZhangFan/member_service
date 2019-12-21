@@ -9,9 +9,8 @@ import cn.gaozheng.sales.model.po.TblMemberSetting;
 import cn.gaozheng.sales.model.po.TblShareTemp;
 import cn.gaozheng.sales.model.po.User;
 import cn.gaozheng.sales.model.vo.ShareInstance;
-import cn.gaozheng.sales.service.ImageService;
-import cn.gaozheng.sales.service.SettingService;
-import cn.gaozheng.sales.service.ShareTempService;
+import cn.gaozheng.sales.service.*;
+import cn.gaozheng.sales.utils.EmptyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,6 +34,10 @@ public class ShareTmepServiceImpl implements ShareTempService{
     ImageService imageService;
     @Autowired
     SettingService settingService;
+    @Autowired
+    OOSService oosService;
+    @Autowired
+    FileService fileService;
 
     @Override
     public List<TblShareTemp> shareTemps( Integer shareTempType){
@@ -50,13 +53,26 @@ public class ShareTmepServiceImpl implements ShareTempService{
         }
         TblShareTemp tblShareTemp = tblShareTempMapper.selectByPrimaryKey(shareTempId);
         if (tblShareTemp == null) throw new SaleException("模板不存在");
-
         DomainSet domainSet = domainSets.get(0);
         String shareUrl = domainSet.getDomainUrl()+ "reg2/index.php?pk="+getPk(user.getUserName());
-        BufferedImage  qrImageBuffer = imageService.generateQRCodeImage(shareUrl,tblShareTemp.getShareQrcodePointSize().intValue(),getInnerICon(user.getIcon()));
-        BufferedImage backGroudImage = imageService.loadImageLocal(uploadPath+tblShareTemp.getShareTempBigPic());
-        imageService.modifyImagetogeter(qrImageBuffer,backGroudImage,tblShareTemp.getShareQrcodePointX(),tblShareTemp.getShareQrcodePointY());
-        return null;
+        if (!EmptyUtil.isNotEmpty(user.getQrcodeUrl())) {
+            BufferedImage qrImageBuffer = imageService.generateQRCodeImage(shareUrl, tblShareTemp.getShareQrcodePointSize().intValue(), getInnerICon(user.getIcon()));
+            String localPath = fileService.saveTempImage(qrImageBuffer, "qrode" + userId + ".jpg");
+            String fullPath = oosService.upload(localPath, userId);
+            if (fullPath == null) {
+                throw new SaleException("创建二维码失败");
+            }
+            user.setQrcodeUrl(fullPath);
+        }
+        String title = user.getNickname()+"邀请您加入高级会员";
+        String imageUrl =  oosService.modifyImagetogeter(user.getQrcodeUrl(),tblShareTemp.getShareTempBigPic(),0,0,0.0,0.0);
+        TblMemberSetting tblMemberSetting = settingService.getSysConfig();
+        ShareInstance shareInstance =  new ShareInstance();
+        shareInstance.setImgUrl(imageUrl);
+        shareInstance.setDesc(tblMemberSetting.getMemberRules());
+        shareInstance.setLink(shareUrl);
+        shareInstance.setTitle(title);
+        return shareInstance;
     }
     @Override
     public ShareInstance shareInfo(Long userId){

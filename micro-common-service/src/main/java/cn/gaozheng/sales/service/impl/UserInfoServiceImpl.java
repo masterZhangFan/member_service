@@ -8,6 +8,7 @@ import cn.gaozheng.sales.model.vo.base.EnumUtils;
 import cn.gaozheng.sales.service.DelegateService;
 import cn.gaozheng.sales.service.RbTreeService;
 import cn.gaozheng.sales.service.UserInfoService;
+import cn.gaozheng.sales.utils.EmptyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,14 @@ public class UserInfoServiceImpl implements UserInfoService {
         List<RbTree> rbTreeList = rbTreeService.getBrTreeDirectly(userId);
         if (rbTreeList != null && rbTreeList.size() > 0 ){
             String userIds = rbTreeService.getUnames(rbTreeList);
-
             fans = userMapper.getFans(userIds);
+        }
+        if (fans!= null){
+            for (Fan item:fans) {
+                if(!EmptyUtil.isNotEmpty(item.getIcon())){
+                    item.setIcon(EnumUtils.defaultProtrailt);
+                }
+            }
         }
         return fans;
     }
@@ -44,6 +51,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (rbTreeList != null && rbTreeList.size() > 0 ){
             String userIds = rbTreeService.getUnames(rbTreeList);
             fans = userMapper.getFans(userIds);
+        }
+        if (fans!= null){
+            for (Fan item:fans) {
+                if(!EmptyUtil.isNotEmpty(item.getIcon())){
+                    item.setIcon(EnumUtils.defaultProtrailt);
+                }
+            }
         }
         return fans;
     }
@@ -55,6 +69,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfo.setDelegate(getDelegateInfo(user.getUserId()));
         userInfo.setMemberLevel(this.getMemberInfo(user.getUserId()));
         userInfo.setCash(getSettlementPrice(userId));
+        if(!EmptyUtil.isNotEmpty(userInfo.getIcon())){
+            userInfo.setIcon(EnumUtils.defaultProtrailt);
+        }
         Banlance banlance = getBanlance(userId);
         userInfo.setShoppingBalance(banlance.getShoppingBalance());
         userInfo.setCallBalance(banlance.getCallBalance());

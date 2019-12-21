@@ -9,4 +9,5 @@ public class Fan {
     private String typeOfMembership;
     private Double memberCashBack;
     private Double delegateCashBack;
+    private String icon;
 }

@@ -30,6 +30,12 @@ public class TblPayOrder {
     private Integer payType;
 
     /**
+     * 微信支付单号
+     */
+    @Column(name = "`wx_order`")
+    private String wxOrder;
+
+    /**
      * 支付金额
      */
     @Column(name = "`pay_money`")

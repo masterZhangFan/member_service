@@ -26,25 +26,23 @@ public class ShareTempController {
     ShareTempService shareTempService;
     @Autowired
     TokenUtilsServer tokenUtilsServer;
-//
-//    @ApiOperation(value = "分享模板")
-//    @GetMapping("/shareTemps")
-//    public ServiceStatus<List<Fan>> shareTemps(Integer shareTempType){
-//        try {
-//            List<TblShareTemp> tblShareTempList = shareTempService.shareTemps(shareTempType);
-//            return new ServiceStatus(ServiceStatus.Status.Success,tblShareTempList);
-//        }catch (Exception e){
-//            return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));
-//        }
-//    }
+
+    @ApiOperation(value = "分享模板")
+    @GetMapping("/shareTemps")
+    public List<TblShareTemp> shareTemps(Integer shareTempType){
+        List<TblShareTemp> tblShareTempList = shareTempService.shareTemps(shareTempType);
+        return tblShareTempList;
+    }
     @ApiOperation(value = "分享信息")
     @GetMapping("/shareInfo")
-    public ServiceStatus<ShareInstance> shareInfo(HttpServletRequest request){
-        try {
-            ShareInstance shareInstance = shareTempService.shareInfo(tokenUtilsServer.uid(request));
-            return new ServiceStatus(ServiceStatus.Status.Success,shareInstance);
-        }catch (Exception e){
-            return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));
-        }
+    public ShareInstance shareInfo(HttpServletRequest request){
+        ShareInstance shareInstance = shareTempService.shareInfo(tokenUtilsServer.uid(request));
+        return shareInstance;
+    }
+    @ApiOperation(value = "分享信息")
+    @GetMapping("/shareInstance")
+    public ShareInstance shareInstance(Long userId,Long shareTempId){
+        ShareInstance shareInstance = shareTempService.shareInstance(userId,shareTempId);
+        return shareInstance;
     }
 }

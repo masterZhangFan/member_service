@@ -41,21 +41,22 @@ public class LoginFilter implements Filter {
     @Value("${spring.profiles.active}")
     private String profile;
 
-    @Override
-    public void init(FilterConfig filterConfig) {
-        String mobileFile = String.format("/%s/", uploadDir);
-        loginExcludes = new String[]{
-                "/login/sendSms",
-                "/login/signIn",
-                "/login/wxToken",
-                "/file/upload",
-                "/swagger-ui.html",
-                mobileFile
-        };
-        applyExcludes = new String[]{"/company"};
-        objectMapper = new ObjectMapper();
-        log.info("init LoginFilter!");
-    }
+//    @Override
+//    public void init(FilterConfig filterConfig) {
+//        String mobileFile = String.format("/%s", "/var/www/html/icallvtsnew");
+//        loginExcludes = new String[]{
+//                "/login/sendSms",
+//                "/login/signIn",
+//                "/login/wxToken",
+//                "/file/upload",
+//                "/swagger-ui.html",
+//                "/var/www/html/icallvtsnew",
+//                mobileFile
+//        };
+//        applyExcludes = new String[]{"/company"};
+//        objectMapper = new ObjectMapper();
+//        log.info("init LoginFilter!");
+//    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -70,13 +71,13 @@ public class LoginFilter implements Filter {
         httpServletResponse.setHeader("XDomainRequestAllowed","1");
         httpServletResponse.setHeader("XDomainRequestAllowed","1");
 
-        String uri = httpServletRequest.getRequestURI();
-        log.info("Request URI: {}", uri);
-        boolean isMatch = isMatch(uri, this.loginExcludes);
-        if (isMatch) {
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
-        }
+//        String uri = httpServletRequest.getRequestURI();
+//        log.info("Request URI: {}", uri);
+//        boolean isMatch = isMatch(uri, this.loginExcludes);
+//        if (isMatch) {
+//            filterChain.doFilter(servletRequest, servletResponse);
+//            return;
+//        }
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

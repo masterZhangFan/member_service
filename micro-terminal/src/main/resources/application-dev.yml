@@ -30,7 +30,8 @@ spring:
       testOnReturn: false
       maxOpenPreparedStatements: 100
       logAbandoned: false
+
 system:
   default:
     file:
-      upload-path: /opt/files/sales/
+      upload-path: D:/temp/files/

@@ -323,10 +323,11 @@ public class ChargeServiceImpl implements ChargeService {
     }
     @Override
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
-    public  Boolean chargeSuccess(String payOrder){
+    public  Boolean chargeSuccess(String payOrder,String transaction_id){
         TblPayOrder tblPayOrder = tblPayOrderMapper.getPayorder(payOrder);
         if (tblPayOrder == null) throw new SaleException("订单不存在");
         if (tblPayOrder.getIsPaySuccess())return true;
+        tblPayOrder.setWxOrder(transaction_id);
         UserInfo userInfo = userInfoService.getUserInfo(tblPayOrder.getUserId());
         if (userInfo == null) {
             throw new SaleException("用户不存在");

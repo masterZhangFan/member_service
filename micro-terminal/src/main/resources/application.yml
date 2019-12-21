@@ -99,8 +99,8 @@ system:
   default:
     file:
       upload-path:
-      upload-dir: mobileFolder
+      upload-dir:  D:/temp/files/
 web:
-  upload-path: ${system.default.file.upload-path}
+  upload-path:  D:/temp/files/
 beehive-url:
 resourceKey:
