@@ -36,7 +36,6 @@ public class ChargeController {
     ChargeService chargeService;
     @Autowired
     TokenUtilsServer tokenUtilsServer;
-
     @ApiOperation(value = "充值列表")
     @GetMapping("/chargeList")
     public List<TblCharge>  chargeList(){
@@ -54,12 +53,12 @@ public class ChargeController {
     }
     @ApiOperation(value = "提现配置设置")
     @PostMapping("/setUserCommissionSet")
-    public Boolean  setUserCommissionSet(HttpServletRequest request,@RequestBody UserCommssionSetParm userCommssionSetParm){
+    public Boolean  setUserCommissionSet(@RequestBody UserCommssionSetParm userCommssionSetParm,HttpServletRequest request){
         return chargeService.setUserCommissionSet(userCommssionSetParm,tokenUtilsServer.uid(request));
     }
     @ApiOperation(value = "提现申请")
     @PostMapping("/userCommissionApplay")
-    public Boolean  userCommissionApplay(HttpServletRequest request,@RequestBody UserCommissionApplayParm userCommissionApplayParm){
+    public Boolean  userCommissionApplay(@RequestBody UserCommissionApplayParm userCommissionApplayParm,HttpServletRequest request){
 
         return chargeService.userCommissionApplay(userCommissionApplayParm,tokenUtilsServer.uid(request));
     }
@@ -68,6 +67,11 @@ public class ChargeController {
     public Map orders(HttpServletRequest request, Integer payFor, Integer chargeId){
         Map orderInfo = chargeService.orders(request,payFor,chargeId,tokenUtilsServer.uid(request));
         return orderInfo;
+    }
+    @ApiOperation(value = "获取支付结果")
+    @GetMapping("/getPayResult")
+    public Boolean getPayResult(String payOrder){
+        return chargeService.getPayResult(payOrder);
     }
     @ApiOperation(value = "支付回调")
     @PostMapping("/notify")

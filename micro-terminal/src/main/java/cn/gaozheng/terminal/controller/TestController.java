@@ -26,11 +26,7 @@ public class TestController {
     UserMapper userMapper;
     @Autowired
     ChargeService chargeService;
-    @ApiOperation(value = "测试")
-    @GetMapping("/test")
-    public Map test(String openId,Integer payFor,Integer chargeId,Long userId){
-        return chargeService.getOrders(openId,payFor,chargeId,userId);
-    }
+
 
 
 //    @ApiOperation(value = "用户")

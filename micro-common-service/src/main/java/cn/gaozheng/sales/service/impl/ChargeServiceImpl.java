@@ -9,10 +9,7 @@ import cn.gaozheng.sales.model.vo.charge.ChargeConfig;
 import cn.gaozheng.sales.model.vo.charge.UserCommissionApplayParm;
 import cn.gaozheng.sales.model.vo.charge.UserCommssionSetParm;
 import cn.gaozheng.sales.service.*;
-import cn.gaozheng.sales.utils.BeanUtils;
-import cn.gaozheng.sales.utils.EmptyUtil;
-import cn.gaozheng.sales.utils.SecuritySHA1Utils;
-import cn.gaozheng.sales.utils.SendPostUtil;
+import cn.gaozheng.sales.utils.*;
 import cn.gaozheng.sales.wechart.WXPayUtil;
 import cn.gaozheng.util.NumberUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -154,9 +151,38 @@ public class ChargeServiceImpl implements ChargeService {
         }
        return true;
     }
+
+    @Override
+    public Boolean getPayResult(String payOrder){
+
+        int count = 20;
+        int index =  0;
+        boolean bSuccessful = false;
+        while (true){
+           if (index > count) break;
+            try{
+                TblPayOrder tblPayOrder = tblPayOrderMapper.getPayorder(payOrder);
+                if (tblPayOrder == null) throw new SaleException("订单不存在");
+                if (tblPayOrder.getIsPaySuccess()){
+                    bSuccessful = true;
+                    break;
+                }
+                Thread.sleep(500);
+            }
+            catch (Exception ex){
+
+            }
+            index++;
+        }
+        if (!bSuccessful){
+            throw new SaleException("获取失败");
+        }
+        return bSuccessful;
+    }
     @Override
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public Boolean userCommissionApplay( UserCommissionApplayParm userCommissionApplayParm,Long userId){
+        System.out.printf("提现申请====>"+userCommissionApplayParm.getAlipayAccount()+":"+userCommissionApplayParm.getAlipayRealname()+":"+userCommissionApplayParm.getAmount());
         userCommissionApplayParm.checkException();
         User user =userMapper.selectByPrimaryKey(userId);
         if (user == null) throw new SaleException("用户不存在");
@@ -169,7 +195,11 @@ public class ChargeServiceImpl implements ChargeService {
             throw new SaleException("最多提现"+userWithdrawSet.getMaxPrice()+"元");
         }
         if (userCommissionApplayParm.getAmount().compareTo(userWithdrawSet.getMinPrice())<0){
-            throw new SaleException("最多提现"+userWithdrawSet.getMaxPrice()+"元");
+            throw new SaleException("最少提现"+userWithdrawSet.getMaxPrice()+"元");
+        }
+        int month = Integer.parseInt(TimeUtils.format(new Date(),"MM"));
+        if (!(month -userWithdrawSet.getStartTime()>=0 && month-userWithdrawSet.getEndTime()<=0)){
+            throw new SaleException("每月"+userWithdrawSet.getStartTime()+"号-"+userWithdrawSet.getEndTime()+"号可提现申请");
         }
         UserCommission userCommission = getUserCommission(user.getUserName());
         userCommission.setAuditing(userCommission.getAuditing().add(new BigDecimal(userCommissionApplayParm.getAmount())));
@@ -190,69 +220,6 @@ public class ChargeServiceImpl implements ChargeService {
         return userCommission;
     }
 
-    public Map getOrders(String openId,Integer payFor,Integer chargeId,Long userId) {
-        String errMsg = null;
-        try {
-            User userInfo =  userMapper.selectByPrimaryKey(userId);
-            if (userInfo == null){
-                throw new SaleException("用户不存在");
-            }
-            ChargeConfig tblChargeConfig = getChargeConfig(null);
-            TblPayOrder tblPayOrder = this.createOrder(payFor,chargeId,userId);
-            String order = tblPayOrder.getPayOrder();
-            String  appid = tblChargeConfig.getAppid();
-            String  mch_id= tblChargeConfig.getMchId();
-            String  paternerKey=  tblChargeConfig.getApikey();
-            String notify_url =  tblChargeConfig.getNotifyUrl();
-            //页面获取openId接口
-            //拼接统一下单地址参数
-            Map<String, String> paraMap = new HashMap<>();
-            //获取请求ip地址
-            paraMap.put("appid", appid);
-            paraMap.put("body",payFor== 1?"助销帮-会员升级":"助消帮-余额充值" );
-            paraMap.put("mch_id", mch_id);
-            paraMap.put("nonce_str", WXPayUtil.generateNonceStr());
-            paraMap.put("openid", openId);
-            paraMap.put("out_trade_no", order);//订单号
-            paraMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
-            paraMap.put("trade_type", "JSAPI");
-            paraMap.put("notify_url",notify_url);// 此路径是微信服务器调用支付结果通知路径随意写
-            String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
-            paraMap.put("sign", sign);
-            String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
-
-            // 统一下单 https://api.mch.weixin.qq.com/pay/unifiedorder
-            String unifiedorder_url =" https://api.mch.weixin.qq.com/pay/unifiedorder";
-            String xmlStr = SendPostUtil.sendPost(unifiedorder_url, xml,null);//发送post请求"统一下单接口"返回预支付id:prepay_id
-            //以下内容是返回前端页面的json数据
-            String prepay_id = "";//预支付id
-            if (xmlStr.indexOf("SUCCESS") != -1) {
-                Map<String, String> map = WXPayUtil.xmlToMap(xmlStr);
-                prepay_id =  map.get("prepay_id");
-            }
-            else {
-                System.out.printf(xmlStr);
-                throw new SaleException("签名失败");
-            }
-            Map<String, String> payMap = new HashMap<String, String>();
-            payMap.put("appId", appid);
-            payMap.put("timeStamp", WXPayUtil.getCurrentTimestamp() + "");
-            payMap.put("nonceStr", WXPayUtil.generateNonceStr());
-            payMap.put("signType", "MD5");
-            payMap.put("package", "prepay_id=" + prepay_id);
-            String paySign = WXPayUtil.generateSignature(payMap, paternerKey);
-            payMap.put("paySign", paySign);
-            payMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
-            System.out.printf(xmlStr);
-            System.out.print(payMap);
-            tblPayOrderMapper.insert(tblPayOrder);
-            return payMap;
-        } catch (Exception e) {
-            errMsg= e.getMessage();
-            e.printStackTrace();
-        }
-        throw new SaleException("下单失败");
-    }
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     @Override
     public Map orders( HttpServletRequest request,Integer payFor,Integer chargeId,Long userId) {
@@ -300,7 +267,6 @@ public class ChargeServiceImpl implements ChargeService {
             String sign = WXPayUtil.generateSignature(paraMap, paternerKey);
             paraMap.put("sign", sign);
             String xml = WXPayUtil.mapToXml(paraMap);//将所有参数(map)转xml格式
-
             // 统一下单 https://api.mch.weixin.qq.com/pay/unifiedorder
             String unifiedorder_url =" https://api.mch.weixin.qq.com/pay/unifiedorder";
             String xmlStr = SendPostUtil.sendPost(unifiedorder_url, xml,null);//发送post请求"统一下单接口"返回预支付id:prepay_id
@@ -318,9 +284,8 @@ public class ChargeServiceImpl implements ChargeService {
             payMap.put("package", "prepay_id=" + prepay_id);
             String paySign = WXPayUtil.generateSignature(payMap, paternerKey);
             payMap.put("paySign", paySign);
+            payMap.put("payOrder",order);
             payMap.put("total_fee",new BigDecimal(tblPayOrder.getPayMoney().toString()).multiply(new BigDecimal(100)).toBigInteger().toString());
-            System.out.printf(xmlStr);
-            System.out.print(payMap);
             tblPayOrderMapper.insert(tblPayOrder);
             return payMap;
         } catch (Exception e) {
