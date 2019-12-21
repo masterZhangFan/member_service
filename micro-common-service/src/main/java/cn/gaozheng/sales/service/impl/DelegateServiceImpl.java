@@ -110,7 +110,7 @@ public class DelegateServiceImpl implements DelegateService {
      */
     @Override
     public User fatherDelegate(Long userId){
-        TblDelegate fatherDelegate =  tblDelegateMapper.selectByPrimaryKey(userId);
+        TblDelegate fatherDelegate =  tblDelegateMapper.getFatherDelegate(userId);
         if (fatherDelegate!=null){
             return userMapper.selectByPrimaryKey(fatherDelegate.getUserId());
         }

@@ -16,15 +16,15 @@ public class TblMemberSetting {
     private Integer settingId;
     /*会员价格*/
     @Column(name = "`member_price`")
-    private Integer memberPrice;
+    private Double memberPrice;
 
     /*一级级返现*/
     @Column(name = "`once_level_cashback`")
-    private Integer onceLevelCashback;
+    private Double onceLevelCashback;
 
     /*二级返现*/
     @Column(name = "`second_level_cashback`")
-    private Integer secondLevelCashback;
+    private Double secondLevelCashback;
 
     /*话费返现*/
     @Column(name = "`call_amount_back`")

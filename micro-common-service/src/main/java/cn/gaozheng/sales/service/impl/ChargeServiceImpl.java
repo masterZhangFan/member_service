@@ -398,7 +398,7 @@ public class ChargeServiceImpl implements ChargeService {
                 }
                 User delegateFatherBase = delegateService.fatherDelegate(userDelegateBase.getUserId());
                 if (delegateFatherBase != null){
-                    UserInfo delegateFatherInfo = userInfoService.getUserInfo(userDelegateBase.getUserId());
+                    UserInfo delegateFatherInfo = userInfoService.getUserInfo(delegateFatherBase.getUserId());
                     if (delegateFatherInfo.getDelegate()!= null && delegateFatherInfo.getDelegate().getDelegateEnbale()){
                         cashBack(userInfo.getUserId(),delegateFatherInfo.getUserId(),delegateFatherInfo.getDelegate().getCashBackAmount() - diffCash,EnumUtils.CashBackTypeDelegate);
                     }

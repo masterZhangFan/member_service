@@ -7,7 +7,7 @@ public class EnumUtils {
     public static Integer MemberTypeJunior  = 1; //初级会员
     public static Integer MemberTypeJuniorSenior =2 ;//高级会员
 
-    public static Long ShoppingMultiplyParm = 100000L;
+    public static Long ShoppingMultiplyParm = 1000000L;
 
     public static Integer ChargeTypeBalance =  2;//话费、余额充值
     public static Integer ChargeTypeMember = 1;//会员充值
