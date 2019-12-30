@@ -1,6 +1,7 @@
 package cn.gaozheng.sales.utils;
 
 import org.springframework.util.DigestUtils;
+import sun.misc.BASE64Encoder;
 
 public class SaleStringUtils {
 
@@ -13,7 +14,16 @@ public class SaleStringUtils {
     }
 
     public static String base64Encode(String str) {
-        return new sun.misc.BASE64Encoder().encode(str.getBytes());
+        BASE64Encoder encoder = new BASE64Encoder();
+        try{
+            byte[] textByte = str.getBytes("UTF-8");
+            String encodedText = encoder.encode(textByte);
+            return encodedText;
+        }
+        catch (Exception ex) {
+
+        }
+        return null;
     }
     public static byte[] base64Decode(String str) {
         byte[] bt = null;

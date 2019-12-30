@@ -6,9 +6,9 @@ spring:
   datasource:
     druid:
       name: default
-      url: jdbc:mysql://123.206.134.85:3799/vts_call?useSSL=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
+      url: jdbc:mysql://127.0.0.1:3306/vts_call?useSSL=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
       username: root
-      password: 2017!@#.haoyun.7cool.cc
+      password: a123456
       driverClassName: com.mysql.jdbc.Driver
       dbType: mysql
       filters: stat

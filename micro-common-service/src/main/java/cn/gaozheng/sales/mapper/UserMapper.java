@@ -21,17 +21,17 @@ public interface UserMapper extends SalesBaseMapper<User> {
     @Update("update user set wx_open_id  = null where wx_open_id  = #{openId}")
     Integer clearOpenId(String openId);
 
-    @Select("SELECT SUM(IFNULL(total,settlement)) as cash FROM `user_commission` t1 JOIN `user` t2\n" +
+    @Select("SELECT SUM(IFNULL(total,0)-IFNULL(settlement,0)-IFNULL(auditing,0)) as cash FROM `user_commission` t1 JOIN `user` t2\n" +
             "on t1.uid =  t2.user_name\n" +
             "WHERE t2.user_id = #{userId}")
     Banlance getAllSettlementPrice(Long userId);
 
 
     @Select("select vf.agent_id,\n" +
-            " convert(fa.balance/1000000,decimal(15,2)) as shopping_balance,\n" +
+            " convert(fa.balance/1000000,decimal(15,2)) as call_balance,\n" +
             " us.create_time,\n" +
             " us.valid_date,\n" +
-            " fa.price as call_balance\n" +
+            " fa.price as shopping_balance\n" +
             "FROM\n" +
             "\t`user` AS us,\n" +
             "\tfield_account AS fa,\n" +

@@ -9,6 +9,8 @@ import cn.gaozheng.sales.model.po.TblMemberSetting;
 import cn.gaozheng.sales.model.po.TblShareTemp;
 import cn.gaozheng.sales.model.po.User;
 import cn.gaozheng.sales.model.vo.ShareInstance;
+import cn.gaozheng.sales.model.vo.WatermarkModel;
+import cn.gaozheng.sales.model.vo.base.EnumUtils;
 import cn.gaozheng.sales.service.*;
 import cn.gaozheng.sales.utils.EmptyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,7 +48,7 @@ public class ShareTmepServiceImpl implements ShareTempService{
         return tblShareTempList;
     }
     @Override
-    public ShareInstance shareInstance( Long userId, Long shareTempId){
+    public ShareInstance shareInstance(Long userId, Long shareTempId){
         User user = userMapper.selectByPrimaryKey(userId);
         List<DomainSet> domainSets = domainSetMapper.selectAll();
         if (domainSets == null || domainSets.size() == 0){
@@ -56,6 +59,9 @@ public class ShareTmepServiceImpl implements ShareTempService{
         DomainSet domainSet = domainSets.get(0);
         String shareUrl = domainSet.getDomainUrl()+ "reg2/index.php?pk="+getPk(user.getUserName());
         if (!EmptyUtil.isNotEmpty(user.getQrcodeUrl())) {
+            if (EmptyUtil.isNotEmpty(user.getIcon())){
+                user.setIcon(EnumUtils.defaultProtrailt);
+            }
             BufferedImage qrImageBuffer = imageService.generateQRCodeImage(shareUrl, tblShareTemp.getShareQrcodePointSize().intValue(), getInnerICon(user.getIcon()));
             String localPath = fileService.saveTempImage(qrImageBuffer, "qrode" + userId + ".jpg");
             String fullPath = oosService.upload(localPath, userId);
@@ -65,7 +71,18 @@ public class ShareTmepServiceImpl implements ShareTempService{
             user.setQrcodeUrl(fullPath);
         }
         String title = user.getNickname()+"邀请您加入高级会员";
-        String imageUrl =  oosService.modifyImagetogeter(user.getQrcodeUrl(),tblShareTemp.getShareTempBigPic(),0,0,0.0,0.0);
+        List<WatermarkModel> watermarkModelList = new ArrayList<>();
+        WatermarkModel m1 = new WatermarkModel();
+        m1.setImageUrl(user.getQrcodeUrl());
+        m1.setX(tblShareTemp.getShareQrcodePointX());
+        m1.setY(tblShareTemp.getShareQrcodePointY());
+        WatermarkModel m2 = new WatermarkModel();
+        m2.setText(title);
+        m2.setX(tblShareTemp.getShareTextPointX());
+        m2.setY(tblShareTemp.getShareTextPointY());
+        watermarkModelList.add(m1);
+        watermarkModelList.add(m2);
+        String imageUrl =  oosService.watermark(tblShareTemp.getShareTempBigPic(),tblShareTemp.getShareTempSizeWidth(),tblShareTemp.getShareTempSizeHeight(),watermarkModelList);
         TblMemberSetting tblMemberSetting = settingService.getSysConfig();
         ShareInstance shareInstance =  new ShareInstance();
         shareInstance.setImgUrl(imageUrl);
@@ -75,22 +92,8 @@ public class ShareTmepServiceImpl implements ShareTempService{
         return shareInstance;
     }
     @Override
-    public ShareInstance shareInfo(Long userId){
-        User user = userMapper.selectByPrimaryKey(userId);
-        List<DomainSet> domainSets = domainSetMapper.selectAll();
-        if (domainSets == null || domainSets.size() == 0){
-            throw new SaleException("域名没配置");
-        }
-        TblMemberSetting tblMemberSetting = settingService.getSysConfig();
-        DomainSet domainSet = domainSets.get(0);
-        String shareUrl = domainSet.getDomainUrl()+ "reg2/index.php?pk="+getPk(user.getUserName());
-        String title = user.getNickname()+"邀请您加入高级会员";
-        ShareInstance shareInstance =  new ShareInstance();
-        shareInstance.setImgUrl(null);
-        shareInstance.setDesc(tblMemberSetting.getMemberRules());
-        shareInstance.setLink(shareUrl);
-        shareInstance.setTitle(title);
-        return shareInstance;
+    public ShareInstance shareInfo(Long userId,Long shareTempId){
+       return shareInstance(userId,shareTempId);
     }
     private String  getQRCodeUrl(){
         UUID uuid = UUID.randomUUID();

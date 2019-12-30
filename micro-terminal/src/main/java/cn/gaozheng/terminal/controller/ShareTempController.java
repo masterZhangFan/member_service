@@ -35,8 +35,8 @@ public class ShareTempController {
     }
     @ApiOperation(value = "分享信息")
     @GetMapping("/shareInfo")
-    public ShareInstance shareInfo(HttpServletRequest request){
-        ShareInstance shareInstance = shareTempService.shareInfo(tokenUtilsServer.uid(request));
+    public ShareInstance shareInfo(HttpServletRequest request,Long shareTempId){
+        ShareInstance shareInstance = shareTempService.shareInfo(tokenUtilsServer.uid(request),shareTempId);
         return shareInstance;
     }
     @ApiOperation(value = "分享信息")

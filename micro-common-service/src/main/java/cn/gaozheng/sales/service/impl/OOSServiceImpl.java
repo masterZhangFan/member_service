@@ -1,6 +1,8 @@
 package cn.gaozheng.sales.service.impl;
 
+import cn.gaozheng.sales.model.vo.WatermarkModel;
 import cn.gaozheng.sales.service.OOSService;
+import cn.gaozheng.sales.utils.EmptyUtil;
 import cn.gaozheng.sales.utils.SaleStringUtils;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -8,6 +10,8 @@ import com.aliyun.oss.model.PutObjectRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class OOSServiceImpl implements OOSService {
@@ -28,16 +32,34 @@ public class OOSServiceImpl implements OOSService {
         ossClient.shutdown();
         return accessUrl+fileName;
     }
-    public String modifyImagetogeter(String addImage, String sourceImg, int x, int y,double w,double h){
+    public String watermark(String sourceImg,double sourceWidth, double sourceHeight, List<WatermarkModel> watermarkModelList){
+        String backgourdImage = sourceImg+"?x-oss-process=image/resize,w_"+new BigDecimal(sourceWidth).intValue()+",h_"+new BigDecimal(sourceHeight).intValue();
+        for (WatermarkModel item:watermarkModelList) {
+            String base64 = null;
+            String imagePathStr = "";
+            if (EmptyUtil.isNotEmpty(item.getImageUrl())) {
+                String p1 = item.getImageUrl().replace(accessUrl, "");
+                base64 = p1 + "?x-oss-process=image";
+                base64 = SaleStringUtils.base64Encode(base64);
+                base64 = base64.replace('+', '-');
+                base64 = base64.replace('/', '_');
+                base64 = base64.replaceAll("=", "");
+                backgourdImage += "/watermark,image_" + base64 + ",g_nw,x_" + new BigDecimal(item.getX()).intValue() + ",y_" + new BigDecimal(item.getY()).intValue();
+            }
+            if (EmptyUtil.isNotEmpty(item.getText())){
+                base64 = SaleStringUtils.base64Encode(item.getText());
+                base64 = base64.replace('+', '-');
+                base64 = base64.replace('/', '_');
+                base64 = base64.replaceAll("=", "");
+                backgourdImage+= "/watermark,text_"+base64+",size_12,color_000000,g_nw,x_"+new BigDecimal(item.getX()).intValue()+",y_"+new BigDecimal(item.getY()).intValue();
+            }
+        }
         //水印图片为当前的Bucket下图片，直接针对图片名称进行base64编码。
-        String p1 = addImage.replace(accessUrl,"");
-        String imagePathStr = p1+"/watermark/wm.png?x-oss-process=image/resize,P_80";
-        String encodeBase64 = SaleStringUtils.base64Encode(imagePathStr);
-        String safeBase64Str = encodeBase64.replace('+', '-');
-        safeBase64Str = safeBase64Str.replace('/', '_');
-        safeBase64Str = safeBase64Str.replaceAll("=", "");
-        String waterMark = sourceImg+"?x-oss-process=image/resize,w_4000/watermark,image_"+safeBase64Str+",g_center";
-        return waterMark;
+        return backgourdImage;
+    }
+    private void xx(){
+
+
     }
 //    public static test(){
 //

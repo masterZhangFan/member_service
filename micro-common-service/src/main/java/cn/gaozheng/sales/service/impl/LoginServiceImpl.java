@@ -52,7 +52,7 @@ public class LoginServiceImpl implements ILoginService {
 
     @Override
     public String sendSms(String phone) throws Exception {
-        if (!NumberUtils.isPhone(phone)){
+        if (phone == null || phone.length()!=11){
             throw new SaleException("手机号格式错误");
         }
         checkUser(phone);

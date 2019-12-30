@@ -12,5 +12,5 @@ public interface ShareTempService {
     ShareInstance shareInstance(Long userId,Long shareTempId);
 
     //生成分享实例
-    ShareInstance shareInfo(Long userId);
+    ShareInstance shareInfo(Long userId,Long shareTempId);
 }

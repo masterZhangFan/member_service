@@ -41,7 +41,7 @@ spring:
       url: jdbc:mysql://123.206.134.85:3799/vts_call?useSSL=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
       username: root
       password: 2017!@#.haoyun.7cool.cc
-      driverClassName: com.mysql.cj.jdbc.Driver
+      driverClassName: com.mysql.jdbc.Driver
       dbType: mysql
       filters: stat
       initialSize: 0
@@ -99,8 +99,8 @@ system:
   default:
     file:
       upload-path:
-      upload-dir:  D:/temp/files/
+      upload-dir:  /var/www/html/icallvtsnew
 web:
-  upload-path:  D:/temp/files/
+  upload-path:  /var/www/html/icallvtsnew
 beehive-url:
 resourceKey:

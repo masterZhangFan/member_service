@@ -6,7 +6,7 @@ import cn.gaozheng.sales.utils.EmptyUtil;
 public class DelegateProvider {
     public String delegateList( DelegateListParm delegateListParm){
         String sql = "SELECT\n" +
-                "\tt1.*, IFNULL(t2.cash, 0) as cash,t_user.nickname,t_user.phone,t_delegate.*,t_delegate_type.*\n" +
+                "\tT1.*, IFNULL(T2.cash, 0) as cash,t_user.nickname,t_user.phone,t_delegate.*,t_delegate_type.*\n" +
                 "FROM\n" +
                 "\ttbl_delegate t_delegate\n" +
                 "JOIN `user` t_user ON t_user.user_id = t_delegate.user_id\n" +
@@ -19,8 +19,8 @@ public class DelegateProvider {
                 "\t\t\t\tfa.balance / 1000000,\n" +
                 "\t\t\t\tDECIMAL (15, 2)\n" +
                 "\t\t\t)\n" +
-                "\t\t) AS shopping_balance,\n" +
-                "\t\tSUM(fa.price) AS call_balance\n" +
+                "\t\t) AS call_balance,\n" +
+                "\t\tSUM(fa.price) AS shopping_balance\n" +
                 "\tFROM\n" +
                 "\t\t`user` AS us,\n" +
                 "\t\tfield_account AS fa,\n" +

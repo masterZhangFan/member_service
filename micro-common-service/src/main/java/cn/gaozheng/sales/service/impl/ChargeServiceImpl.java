@@ -381,6 +381,10 @@ public class ChargeServiceImpl implements ChargeService {
     }
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public void chargeBalance(Long userId,Double shoppingAmountCahrge,Float callAmountCharge,String payOrder,String phone,String type,String remark){
+        Float x1 = callAmountCharge;
+        callAmountCharge = shoppingAmountCahrge!=null?shoppingAmountCahrge.floatValue():0;
+        shoppingAmountCahrge =x1 != null? x1.doubleValue():0;
+
         FieldAccount fieldAccount = fieldAccountMapper.getFieldAccountWithUserId(userId);
         Long beforeShoppingAmout = fieldAccount.getBalance()!= null?fieldAccount.getBalance():0L;
         Float beforeCallAmount = fieldAccount.getPrice()!= null?fieldAccount.getPrice():0.0F;
@@ -441,11 +445,9 @@ public class ChargeServiceImpl implements ChargeService {
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
     public void cashBack(Long fromUserId,Long toUserId,Double cashBack,Integer cashType){
         User user = userMapper.selectByPrimaryKey(toUserId);
-        UserCommission userCommission = new UserCommission();
-        userCommission.setUid(user.getUserName());
-        userCommission.setTotal(null);
-        userCommission.setSettlement(new BigDecimal(cashBack));
-        userCommissionMapper.insert(userCommission);
+        UserCommission userCommission  = userCommissionMapper.getUserCommission(user.getUserName());
+        userCommission.setTotal(userCommission.getTotal().add(new BigDecimal(cashBack)));
+        userCommissionMapper.updateByPrimaryKey(userCommission);
 
         TblCashBack tblCashBack = new TblCashBack();
         tblCashBack.setCashBackFromUserId(fromUserId);

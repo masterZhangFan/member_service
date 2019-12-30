@@ -20,7 +20,7 @@ public class UserProvider {
                 "\tIFNULL(t1.cash_back_money,0) as member_cash_back,\n" +
                 "\tIFNULL(t2.cash_back_money,0)as delegate_cash_back\n" +
                 "FROM\n" +
-                "\tUSER AS us\n" +
+                "\t`user` AS us\n" +
                 "LEFT JOIN rb_income AS income ON income.uid = us.user_name\n" +
                 "LEFT JOIN(\n" +
                 "\tSELECT cash_back_from_user_id,SUM(cash_back_money) as cash_back_money FROM tbl_cash_back  WHERE cash_back_type = 1  GROUP BY cash_back_from_user_id\n" +
@@ -52,8 +52,8 @@ public class UserProvider {
                 "\t\t\t\tfa.balance / 1000000,\n" +
                 "\t\t\t\tDECIMAL (15, 2)\n" +
                 "\t\t\t)\n" +
-                "\t\t) AS shopping_balance,\n" +
-                "\t\tSUM(fa.price) AS call_balance\n" +
+                "\t\t) AS call_balance,\n" +
+                "\t\tSUM(fa.price) AS shopping_balance\n" +
                 "\tFROM\n" +
                 "\t\t`user` AS us,\n" +
                 "\t\tfield_account AS fa,\n" +
