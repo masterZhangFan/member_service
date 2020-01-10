@@ -56,8 +56,7 @@ public class ShareTmepServiceImpl implements ShareTempService{
         }
         TblShareTemp tblShareTemp = tblShareTempMapper.selectByPrimaryKey(shareTempId);
         if (tblShareTemp == null) throw new SaleException("模板不存在");
-        DomainSet domainSet = domainSets.get(0);
-        String shareUrl = domainSet.getDomainUrl()+ "reg2/index.php?pk="+getPk(user.getUserName());
+        String shareUrl = "https://mp.scxcyb.cn/reg2/index.php?pk="+getPk(user.getUserName());
         if (!EmptyUtil.isNotEmpty(user.getQrcodeUrl())) {
             if (EmptyUtil.isNotEmpty(user.getIcon())){
                 user.setIcon(EnumUtils.defaultProtrailt);
@@ -86,7 +85,10 @@ public class ShareTmepServiceImpl implements ShareTempService{
         TblMemberSetting tblMemberSetting = settingService.getSysConfig();
         ShareInstance shareInstance =  new ShareInstance();
         shareInstance.setImgUrl(imageUrl);
-        shareInstance.setDesc(tblMemberSetting.getMemberRules());
+        shareInstance.setDesc(
+                "注册后，立即赠送的5元话费金额与50元购物金额,通过个人二维码推荐发展一个初级会员，可获得平台配发的25元/人的购物金额红包奖励。\n"+
+                "升级高级会员后，享有商城自购物品返佣总额10%佣金奖励，推荐的用户升级为高级会员后，更享受50元每人推荐服务，推荐的下下级成为高级会员后，享受20元每人间接推荐服务费用有推荐高级会员加入平台资格。"
+           );
         shareInstance.setLink(shareUrl);
         shareInstance.setTitle(title);
         return shareInstance;

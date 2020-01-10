@@ -21,4 +21,8 @@ public class DelegateListM extends TblDelegate {
     private String nickname;
     /*icon*/
     private String icon;
+    /*返现金额*/
+    private Double moneyTotal;
+    /*总的粉丝数*/
+    private Integer fans;
 }

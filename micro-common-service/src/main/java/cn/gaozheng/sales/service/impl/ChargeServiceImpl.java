@@ -339,36 +339,66 @@ public class ChargeServiceImpl implements ChargeService {
             //会员充值
             TblMemberSetting tblMemberSetting = this.getMemberSetting();
             User firstLevelUserBase = rbTreeService.fatherTree(userInfo.getUserId());
+            /*代理1级2级返现50,20  二级代理  只返现5元*/
+            UserInfo firstLevelUserInfo = null; //上级
+            UserInfo secondUserInfo = null;//上上级
+            UserInfo firstDelegateInfo = null; //
+            UserInfo secondDelegateInfo =  null;
+            long firstLevelUserId = 0;
+            long secondLevelUserId = 0;
             if (firstLevelUserBase!= null){
-                UserInfo firstLevelUserInfo = userInfoService.getUserInfo(firstLevelUserBase.getUserId());
-                if (firstLevelUserInfo.getMemberLevel().equals(EnumUtils.MemberTypeJuniorSenior)){
-                    //处理返现50元
-                    cashBack(userInfo.getUserId(),firstLevelUserBase.getUserId(),tblMemberSetting.getOnceLevelCashback().doubleValue(),EnumUtils.CashBackTypeFirstLevel);
-                }
+                firstLevelUserInfo = userInfoService.getUserInfo(firstLevelUserBase.getUserId());
+                firstLevelUserId = firstLevelUserInfo.getUserId();
                 User secondLevelUser = rbTreeService.fatherTree(firstLevelUserInfo.getUserId());
                 if (secondLevelUser != null){
-                    UserInfo secondUserInfo = userInfoService.getUserInfo(secondLevelUser.getUserId());
-                    if (secondUserInfo.getMemberLevel().equals(EnumUtils.MemberTypeJuniorSenior)){
-                        //处理返现50元
-                        cashBack(userInfo.getUserId(),secondLevelUser.getUserId(),tblMemberSetting.getSecondLevelCashback().doubleValue(),EnumUtils.CashBackTypeSecondLevel);
-                    }
+                    secondUserInfo = userInfoService.getUserInfo(secondLevelUser.getUserId());
+                    secondLevelUserId = secondLevelUser.getUserId();
                 }
             }
             User userDelegateBase = delegateService.getDelegateOfUser(userInfo.getUserId());
             if (userDelegateBase!= null){
-                Double diffCash =0.0;
-                UserInfo userDelegateInfo = userInfoService.getUserInfo(userDelegateBase.getUserId());
-                if (userDelegateInfo.getDelegate()!= null && userDelegateInfo.getDelegate().getDelegateEnbale()){
-                    cashBack(userInfo.getUserId(),userDelegateBase.getUserId(),userDelegateInfo.getDelegate().getCashBackAmount(),EnumUtils.CashBackTypeDelegate);
-                    diffCash = userDelegateInfo.getDelegate().getCashBackAmount();
-                }
-                User delegateFatherBase = delegateService.fatherDelegate(userDelegateBase.getUserId());
+                firstDelegateInfo = userInfoService.getUserInfo(userDelegateBase.getUserId());
+                User delegateFatherBase = delegateService.getDelegateOfUser(userDelegateBase.getUserId());
                 if (delegateFatherBase != null){
-                    UserInfo delegateFatherInfo = userInfoService.getUserInfo(delegateFatherBase.getUserId());
-                    if (delegateFatherInfo.getDelegate()!= null && delegateFatherInfo.getDelegate().getDelegateEnbale()){
-                        cashBack(userInfo.getUserId(),delegateFatherInfo.getUserId(),delegateFatherInfo.getDelegate().getCashBackAmount() - diffCash,EnumUtils.CashBackTypeDelegate);
+                    secondDelegateInfo = userInfoService.getUserInfo(delegateFatherBase.getUserId());
+                }
+            }
+            //上级
+            if (firstLevelUserInfo != null){
+                //上级是高级会员或者代理，就返现50元
+                if (firstLevelUserInfo.getMemberLevel().equals(EnumUtils.MemberTypeJuniorSenior) || firstLevelUserInfo.getDelegate() != null){
+                    cashBack(userInfo.getUserId(),firstLevelUserInfo.getUserId(),tblMemberSetting.getOnceLevelCashback(),EnumUtils.CashBackTypeFirstLevel,tblPayOrder.getPayOrderId());
+                    firstLevelUserId = firstLevelUserInfo.getUserId();
+                }
+            }
+            //上上级
+            if (secondUserInfo != null){
+                if (firstLevelUserInfo != null && firstLevelUserInfo.getDelegate() != null){
+                    //上级如果是代理
+                    if (secondUserInfo != null && secondUserInfo.getDelegate() != null){
+                        //如果上上级是代理,就返现代理金额
+                        secondLevelUserId = secondUserInfo.getUserId();
+                        cashBack(userInfo.getUserId(),secondUserInfo.getUserId(),secondUserInfo.getDelegate().getCashBackAmount(),EnumUtils.CashBackTypeDelegate,tblPayOrder.getPayOrderId());
+                    }
+                    //否则就不返回了
+                }
+                else {
+                    //不是代理，
+                    if (secondUserInfo.getDelegate() != null || secondUserInfo.getMemberLevel().equals(EnumUtils.MemberTypeJuniorSenior)){
+                        //如果是代理或者会员
+                        secondLevelUserId = secondUserInfo.getUserId();
+                        cashBack(userInfo.getUserId(),secondUserInfo.getUserId(),tblMemberSetting.getSecondLevelCashback(),EnumUtils.CashBackTypeFirstLevel,tblPayOrder.getPayOrderId());
                     }
                 }
+
+            }
+            //一级代理
+            if (firstDelegateInfo!= null && !firstDelegateInfo.getUserId().equals(firstLevelUserId) && !firstDelegateInfo.getUserId().equals(secondLevelUserId) && firstDelegateInfo.getDelegate()!= null && firstDelegateInfo.getDelegate().getDelegateEnbale()){
+                cashBack(userInfo.getUserId(),userDelegateBase.getUserId(),firstDelegateInfo.getDelegate().getCashBackAmount(),EnumUtils.CashBackTypeDelegate,tblPayOrder.getPayOrderId());
+            }
+            //二级代理
+            if (secondDelegateInfo!= null && !secondDelegateInfo.getUserId().equals(firstLevelUserId) && !secondDelegateInfo.getUserId().equals(secondLevelUserId) && secondDelegateInfo.getDelegate()!= null && secondDelegateInfo.getDelegate().getDelegateEnbale()){
+                cashBack(userInfo.getUserId(),secondDelegateInfo.getUserId(),secondDelegateInfo.getDelegate().getCashBackAmount(),EnumUtils.CashBackTypeDelegate,tblPayOrder.getPayOrderId());
             }
             memberService.setMember(EnumUtils.MemberTypeJuniorSenior,userInfo.getUserId());
             this.chargeBalance(userInfo.getUserId(),tblMemberSetting.getShoppingAmountBack(),tblMemberSetting.getCallAmountBack(),payOrder,userInfo.getPhone(),"充值","高级会员充值");
@@ -443,17 +473,35 @@ public class ChargeServiceImpl implements ChargeService {
 
     }
     @Transactional(rollbackFor ={SQLException.class, RuntimeException.class})
-    public void cashBack(Long fromUserId,Long toUserId,Double cashBack,Integer cashType){
+    public void cashBack(Long fromUserId,Long toUserId,Double cashBack,Integer cashType,Long orderId){
         User user = userMapper.selectByPrimaryKey(toUserId);
         UserCommission userCommission  = userCommissionMapper.getUserCommission(user.getUserName());
-        userCommission.setTotal(userCommission.getTotal().add(new BigDecimal(cashBack)));
-        userCommissionMapper.updateByPrimaryKey(userCommission);
+        if (userCommission == null){
+            userCommission = new UserCommission();
+        }
+        if (userCommission.getTotal()!=null){
+            userCommission.setTotal(userCommission.getTotal().add(new BigDecimal(cashBack)));
+        }
+        else {
+            userCommission.setTotal(new BigDecimal(cashBack));
+        }
+        if (userCommission.getId() == null){
+            userCommission.setUid(user.getUserName());
 
+            userCommission.setSettlement(new BigDecimal(0));
+            userCommission.setAuditing(new BigDecimal(0));
+            userCommissionMapper.insert(userCommission);
+        }
+        else {
+            userCommissionMapper.updateByPrimaryKey(userCommission);
+        }
         TblCashBack tblCashBack = new TblCashBack();
         tblCashBack.setCashBackFromUserId(fromUserId);
         tblCashBack.setCashBackToUserId(toUserId);
         tblCashBack.setCashBackMoney(cashBack);
         tblCashBack.setCashBackType(cashType);
+        tblCashBack.setCashBackTime(new Date());
+        tblCashBack.setOrderId(orderId);
         tblCashBackMapper.insert(tblCashBack);
     }
 

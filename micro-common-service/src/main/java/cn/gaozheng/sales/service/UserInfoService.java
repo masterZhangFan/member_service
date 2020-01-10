@@ -11,6 +11,8 @@ public interface UserInfoService {
     List<Fan> getDirectlyFanWithUserId(Long userId);
     //获取简介粉丝
     List<Fan> getIndirectFanWithUserId(Long userId);
+    //获取裂变粉丝
+    List<Fan> getFissionFanWithUserId(Long userId);
 
     UserInfo getUserInfo( Long userId);
 

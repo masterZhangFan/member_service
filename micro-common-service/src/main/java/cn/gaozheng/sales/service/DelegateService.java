@@ -31,7 +31,7 @@ public interface DelegateService {
     User getDelegateOfUser(Long userId);
 
     /**
-     * 获取某个用户的父级代理
+     * 获取某个代理的父级代理
      * @param userId
      * @return
      */

@@ -1,6 +1,7 @@
 package cn.gaozheng.sales.service.impl;
 
 import cn.gaozheng.sales.exception.SaleException;
+import cn.gaozheng.sales.mapper.TblCashBackMapper;
 import cn.gaozheng.sales.mapper.TblDelegateMapper;
 import cn.gaozheng.sales.mapper.TblDelegateTypeMapper;
 import cn.gaozheng.sales.mapper.UserMapper;
@@ -10,10 +11,15 @@ import cn.gaozheng.sales.model.po.TblMemberSetting;
 import cn.gaozheng.sales.model.po.User;
 import cn.gaozheng.sales.model.vo.DelegateListM;
 import cn.gaozheng.sales.model.vo.DelegateListParm;
+import cn.gaozheng.sales.model.vo.Fan;
+import cn.gaozheng.sales.model.vo.UserInfo;
+import cn.gaozheng.sales.model.vo.base.EnumUtils;
 import cn.gaozheng.sales.service.DelegateService;
 import cn.gaozheng.sales.service.RbTreeService;
 import cn.gaozheng.sales.service.SettingService;
+import cn.gaozheng.sales.service.UserInfoService;
 import cn.gaozheng.sales.utils.BeanUtils;
+import cn.gaozheng.sales.utils.EmptyUtil;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +34,15 @@ public class DelegateServiceImpl implements DelegateService {
     @Autowired
     TblDelegateTypeMapper tblDelegateTypeMapper;
     @Autowired
+    TblCashBackMapper tblCashBackMapper;
+    @Autowired
     SettingService settingService;
     @Autowired
     UserMapper userMapper;
     @Autowired
     RbTreeService rbTreeService;
+    @Autowired
+    UserInfoService userInfoService;
 
     @Override
      public List<TblDelegateType> getDelegateTypes(){
@@ -58,6 +68,23 @@ public class DelegateServiceImpl implements DelegateService {
      @Override
     public PageInfo<DelegateListM> delegateList( DelegateListParm delegateListParm){
         List<DelegateListM> tblDelegates = tblDelegateMapper.delegateList(delegateListParm);
+        if (delegateListParm.getParentDelegateId() != null){
+            for (DelegateListM item:tblDelegates) {
+                List<Fan> f1 =  userInfoService.getDirectlyFanWithUserId(item.getUserId());
+                List<Fan> f2 = userInfoService.getIndirectFanWithUserId(item.getUserId());
+                List<Fan> f3 = userInfoService.getFissionFanWithUserId(item.getUserId());
+                int count = 0;
+                if (f1 != null) count=count+f1.size();
+                if (f2 != null) count=count+f1.size();
+                if (f3 != null) count=count+f1.size();
+                item.setFans(count);
+                Double cashBack =  tblCashBackMapper.cashBackMoneyOfDelegate(delegateListParm.getParentDelegateId(),item.getUserId());
+                item.setMoneyTotal(cashBack);
+                if (!EmptyUtil.isNotEmpty(item.getIcon())){
+                    item.setIcon(EnumUtils.defaultProtrailt);
+                }
+            }
+        }
         PageInfo<DelegateListM> pageInfo = new PageInfo<>(tblDelegates);
         return pageInfo;
     }
@@ -66,6 +93,13 @@ public class DelegateServiceImpl implements DelegateService {
         DelegateListParm delegateListParm = new DelegateListParm();
         delegateListParm.setParentDelegateId(userId);
         List<DelegateListM> tblDelegates = tblDelegateMapper.delegateList(delegateListParm);
+        if (tblDelegates != null){
+            for (DelegateListM item:tblDelegates) {
+                if (!EmptyUtil.isNotEmpty(item.getIcon())){
+                    item.setIcon(EnumUtils.defaultProtrailt);
+                }
+            }
+        }
         return tblDelegates;
     }
     @Override
@@ -74,6 +108,11 @@ public class DelegateServiceImpl implements DelegateService {
         delegateListParm.setUserId(userId);
         List<DelegateListM> tblDelegates = tblDelegateMapper.delegateList(delegateListParm);
         if (tblDelegates != null && tblDelegates.size() > 0){
+            for (DelegateListM item:tblDelegates) {
+                if (!EmptyUtil.isNotEmpty(item.getIcon())){
+                    item.setIcon(EnumUtils.defaultProtrailt);
+                }
+            }
             return tblDelegates.get(0);
         }
         return null;
@@ -91,6 +130,7 @@ public class DelegateServiceImpl implements DelegateService {
             BeanUtils.copyPropertiesIgnoreNullValue(tblDelegate,extit);
             tblDelegateMapper.updateByPrimaryKey(tblDelegate) ;
         }
+
         return true;
     }
     /**
@@ -124,7 +164,7 @@ public class DelegateServiceImpl implements DelegateService {
         return tblMemberSetting;
     }
     private void  checkDelegate(TblDelegate tblDelegate){
-        if (tblDelegate.getCashBackAmount() == null || tblDelegate.getCashBackAmount() < 0) {
+        if ((tblDelegate.getParentDelegateId()== null || tblDelegate.getParentDelegateId() == 0) && tblDelegate.getCashBackAmount() == null || tblDelegate.getCashBackAmount() < 0) {
             throw new SaleException("代理返现金额错误");
         }
         if (tblDelegate.getUserId() == null || tblDelegate.getUserId() < 1){
@@ -132,6 +172,13 @@ public class DelegateServiceImpl implements DelegateService {
         }
         if (tblDelegate.getDelegateTypeId() == null || tblDelegate.getDelegateTypeId() < 1){
             throw new SaleException("请选择代理类型");
+        }
+        UserInfo userInfo = userInfoService.getUserInfo(tblDelegate.getUserId());
+        if (userInfo == null){
+            throw new SaleException("用户不存在");
+        }
+        if (!EnumUtils.MemberTypeJuniorSenior.equals(userInfo.getMemberLevel())){
+            throw new SaleException("用户不是高级会员");
         }
         TblDelegateType tblDelegateType = this.checkDelegateType(tblDelegate.getDelegateTypeId());
         TblMemberSetting tblMemberSetting = this.checkSetting();
@@ -144,7 +191,7 @@ public class DelegateServiceImpl implements DelegateService {
                 if (tblDelegateType.getDelegateTypeLevel() <= fatherDelegateType.getDelegateTypeLevel()){
                     throw new SaleException("代理等级不能超过父级");
                 }
-                remainPrice= fatherDelegate.getCashBackAmount();
+                tblDelegate.setCashBackAmount(fatherDelegate.getCashBackAmount());
             }
             else {
                 tblDelegate.setParentDelegateId(null);

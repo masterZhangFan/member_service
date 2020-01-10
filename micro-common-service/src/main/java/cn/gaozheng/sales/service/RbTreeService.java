@@ -12,6 +12,8 @@ public interface RbTreeService {
     List<RbTree> getBrTreeDirectly(Long userId);
     /*间接粉丝*/
     List<RbTree> getBrTreeIndirect(Long userId);
+    /*裂变粉丝*/
+    List<RbTree> getBrTreeFission(Long userId);
     /*根据数组获取用户ID*/
     String getUnames(List<RbTree> rbTrees);
     //父节点

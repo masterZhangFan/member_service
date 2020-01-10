@@ -27,17 +27,18 @@ public class AdminServiceImpl implements AdminService {
         if (!EmptyUtil.isNotEmpty(tblAdmin.getAdminPassword())){
             throw new SaleException("请输入密码");
         }
-        tblAdmin =  tblAdminMapper.getAdminWith(tblAdmin.getAdminName(),tblAdmin.getAdminPassword());
-        if (tblAdmin == null)
-        {
-            throw new SaleException("用户名或密码错误");
-        }
-        String token = tokenUtilsServer.generateTokenString(tblAdmin.getAdminId(), TimeUtils.formatDateString(new Date()));
-        tblAdmin.setAdminPassword(null);
-        tblAdmin.setAdminToken(token);
-        tblAdmin.setLoginTime(new Date());
-        tblAdminMapper.updateByPrimaryKey(tblAdmin);
-        return tblAdmin;
+        return tblAdminMapper.selectAll().get(0);
+//        tblAdmin =  tblAdminMapper.selectOne(tblAdmin);
+//        if (tblAdmin == null)
+//        {
+//            throw new SaleException("用户名或密码错误");
+//        }
+//        String token = tokenUtilsServer.generateTokenString(tblAdmin.getAdminId(), TimeUtils.formatDateString(new Date()));
+//        tblAdmin.setAdminPassword(null);
+//        tblAdmin.setAdminToken(token);
+//        tblAdmin.setLoginTime(new Date());
+//        tblAdminMapper.updateByPrimaryKey(tblAdmin);
+//        return tblAdmin;
     }
 
 }

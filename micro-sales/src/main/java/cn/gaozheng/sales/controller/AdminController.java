@@ -19,11 +19,7 @@ public class AdminController {
     AdminService adminService;
 
     @PostMapping("/login")
-    public ServiceStatus login( @RequestBody TblAdmin tblAdmin) {
-        try {
-            return new ServiceStatus(ServiceStatus.Status.Success,adminService.login(tblAdmin));
-        }catch (Exception e){
-            return new ServiceStatus(ServiceStatus.Status.Fail, ExceptionUtil.getExceptionDesc(e));
-        }
+    public TblAdmin login( @RequestBody TblAdmin tblAdmin) {
+       return adminService.login(tblAdmin);
     }
 }

@@ -14,6 +14,9 @@ public interface RbTreeMapper extends SalesBaseMapper<RbTree> {
     @SelectProvider(type = UserProvider.class,method = "getChildrenTrees")
     List<RbTree> getChildrenTrees(String unames);
 
+    @SelectProvider(type = UserProvider.class,method = "removeDelegateTrees")
+    List<RbTree> removeDelegateTrees(String unames);
+
     @Select("SELECT\n" +
             "\tt2.*\n" +
             "FROM\n" +

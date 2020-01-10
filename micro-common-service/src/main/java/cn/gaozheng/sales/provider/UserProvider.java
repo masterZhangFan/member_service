@@ -9,11 +9,12 @@ import java.util.List;
 
 public class UserProvider {
     public String getFans(String names){
-        String sql = "SELECT\n" +
+        String sql = "SELECT DISTINCT\n" +
                 "\tincome.rank,\n" +
+                "\tincome.rank as type_of_membership,\n" +
                 "\tincome. STATUS,\n" +
                 "\tus.user_id,"+
-                "\tus.nickname,\n" +
+                "\tus.long_name as nickname,\n" +
                 "\tus.long_name,\n" +
                 "\tus.icon,\n" +
                 "\tus.create_time,\n" +
@@ -40,7 +41,7 @@ public class UserProvider {
     }
     public String memberInfos( MemberListParm req){
         String sql = "SELECT\n" +
-                "\tt1.*, t_member.rank as member_level ,IFNULL(t2.cash, 0) as cash,t_user.nickname,t_user.phone\n" +
+                "\tT1.*, t_member.rank as member_level ,IFNULL(T2.cash, 0) as cash,t_user.nickname,t_user.phone\n" +
                 "FROM\n" +
                 "\trb_income t_member\n" +
                 "JOIN `user` t_user ON t_user.user_name = t_member.uid\n" +
@@ -89,10 +90,10 @@ public class UserProvider {
 
     public String memberInfoNotIncludeDelegate(String userNames,String searchText){
         String sql = "SELECT\n" +
-                "\tt1.*, t_member.rank as member_level ,IFNULL(t2.cash, 0) as cash,t_user.nickname,t_user.phone\n" +
+                "\tT1.*, t_member.rank as member_level ,IFNULL(T2.cash, 0) as cash,t_user.nickname,t_user.phone\n" +
                 "FROM\n" +
                 "\trb_income t_member\n" +
-                "JOIN `user` t_user ON t_user.user_name = t_member.uid\n" +
+                "JOIN `user` t_user ON (t_user.user_name = t_member.uid and t_member.rank = 2)\n" +
                 "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tus.user_id,\n" +
@@ -122,8 +123,13 @@ public class UserProvider {
                 "\tJOIN `user` t2 ON t1.uid = t2.user_name\n" +
                 "\tGROUP BY\n" +
                 "\t\tt2.user_id\n" +
-                ") AS T2 ON T1.user_id = T2.user_id and T2.user_id not in(SELECT user_id from tbl_delegate)\n" +
-                "WHERE 1 = 1 \n" ;
+                ") AS T2 ON T1.user_id = T2.user_id\n" +
+                "WHERE  t_user.user_id NOT IN (\n" +
+                "\tSELECT\n" +
+                "\t\tuser_id\n" +
+                "\tFROM\n" +
+                "\t\ttbl_delegate\n" +
+                ")\n" ;
        if (EmptyUtil.isNotEmpty(searchText)){
             sql+= "\tand t_user.phone like  '%"+ searchText+"%'";
         }
@@ -133,9 +139,12 @@ public class UserProvider {
         return sql;
     }
     public String getChildrenTrees(String unames){
-        String sql =  "select uid from rb_tree where puid in ("+unames+") AND uid not in (SELECT user_id from tbl_delegate)";
+        String sql =  "select uid from rb_tree where puid in ("+unames+")";
         return sql;
     }
-
+    public String removeDelegateTrees(String unames){
+        String sql =  "select uid from rb_tree where uid in ("+unames+") and uid not in (SELECT t2.user_name FROM tbl_delegate t1 join `user` t2 on t1.user_id = t2.user_id)";
+        return sql;
+    }
 
 }

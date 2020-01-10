@@ -38,10 +38,13 @@ public class RbTreeServiceImpl implements RbTreeService {
     public List<RbTree> getBrTreeIndirect(Long userId){
         List<RbTree> rbTreeList =  this.getBrTreeDirectly(userId);//直属粉丝
         List<RbTree> results = new ArrayList<>();
-        TblDelegate tblDelegate = tblDelegateMapper.selectByPrimaryKey(userId);
-        if (rbTreeList != null){
-            getChildrenBrTree(rbTreeList,results,tblDelegate!= null?99999:1);
-        }
+        getChildrenBrTree(rbTreeList,results,1);
+        return results;
+    }
+    public List<RbTree> getBrTreeFission(Long userId){
+        List<RbTree> rbTreeList =  this.getBrTreeIndirect(userId);//直属粉丝
+        List<RbTree> results = new ArrayList<>();
+        getChildrenBrTree(rbTreeList,results,999);
         return results;
     }
     @Override
@@ -52,13 +55,14 @@ public class RbTreeServiceImpl implements RbTreeService {
     }
 
     private void getChildrenBrTree(List<RbTree> rbTrees,List<RbTree> allRbTree,int level){
-        List<RbTree>  result =   getRbTreeWithLevel(getUnames(rbTrees));
+        List<RbTree>  result =  getRbTreeWithLevel(getUnames(rbTrees));
         if (result != null){
             allRbTree.addAll(result);
         }
         level--;
         if (level > 0 && result != null && result.size() >0){
-            getChildrenBrTree(result,allRbTree,level);
+            List<RbTree> nextRbTree =  rbTreeMapper.removeDelegateTrees(getUnames(result));
+            getChildrenBrTree(nextRbTree,allRbTree,level);
         }
         return ;
     }

@@ -1,8 +1,11 @@
 package cn.gaozheng.sales.model.po;
 
+import cn.hutool.core.date.DateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 @Table(name = "tbl_cash_back")
 public class TblCashBack {
@@ -24,6 +27,21 @@ public class TblCashBack {
      */
     @Column(name = "`cash_back_type`")
     private Integer cashBackType;
+
+    /**
+     * 时间
+     */
+    @Column(name = "`cash_back_time`")
+    private Date cashBackTime;
+
+
+    /**
+     * 时间
+     */
+    @Column(name = "`order_id`")
+    private Long orderId;
+
+
 
     /**
      * @return cash_back_id
@@ -97,5 +115,21 @@ public class TblCashBack {
      */
     public void setCashBackType(Integer cashBackType) {
         this.cashBackType = cashBackType;
+    }
+
+    public Date getCashBackTime() {
+        return cashBackTime;
+    }
+
+    public void setCashBackTime( Date cashBackTime ) {
+        this.cashBackTime = cashBackTime;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId( Long orderId ) {
+        this.orderId = orderId;
     }
 }

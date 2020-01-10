@@ -62,8 +62,28 @@ public class UserInfoServiceImpl implements UserInfoService {
         return fans;
     }
     @Override
+    public List<Fan> getFissionFanWithUserId(Long userId){
+        List<Fan> fans = new ArrayList<>();
+        List<RbTree> rbTreeList = rbTreeService.getBrTreeFission(userId);
+        if (rbTreeList != null && rbTreeList.size() > 0 ){
+            String userIds = rbTreeService.getUnames(rbTreeList);
+            fans = userMapper.getFans(userIds);
+        }
+        if (fans!= null){
+            for (Fan item:fans) {
+                if(!EmptyUtil.isNotEmpty(item.getIcon())){
+                    item.setIcon(EnumUtils.defaultProtrailt);
+                }
+            }
+        }
+        return fans;
+    }
+    @Override
     public UserInfo getUserInfo( Long userId){
         User user = userMapper.selectByPrimaryKey(userId);
+        if (user == null){
+            throw new SaleException("用户不存在");
+        }
         UserInfo userInfo = new UserInfo();
         BeanUtils.copyProperties(user,userInfo);
         userInfo.setDelegate(getDelegateInfo(user.getUserId()));
