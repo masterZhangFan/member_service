@@ -8,6 +8,7 @@ import cn.gaozheng.sales.model.po.TblDelegate;
 import cn.gaozheng.sales.model.po.User;
 import cn.gaozheng.sales.service.RbTreeService;
 import cn.gaozheng.sales.utils.EmptyUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +54,23 @@ public class RbTreeServiceImpl implements RbTreeService {
         User fatherUser = rbTreeMapper.fatherTree(user.getUserName());
         return fatherUser;
     }
-
+    @Override
+    public void genRbTree(String uids,Integer puid){
+        String[] uidSplits = StringUtils.split(uids,",");
+        for (String item:uidSplits) {
+            RbTree rbTree =  rbTreeMapper.getWithUid(item);
+            if (rbTree == null){
+               User user = userMapper.getWithUserName(item);
+               if (user != null){
+                   rbTree = new RbTree();
+                   rbTree.setPuid(puid);
+                   rbTree.setUid(Integer.parseInt(item));
+                   rbTree.setTime(user.getCreateTime());
+                   rbTreeMapper.insert(rbTree);
+               }
+            }
+        }
+    }
     private void getChildrenBrTree(List<RbTree> rbTrees,List<RbTree> allRbTree,int level){
         List<RbTree>  result =  getRbTreeWithLevel(getUnames(rbTrees));
         if (result != null){

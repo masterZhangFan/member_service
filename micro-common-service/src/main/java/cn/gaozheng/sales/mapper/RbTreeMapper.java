@@ -25,4 +25,7 @@ public interface RbTreeMapper extends SalesBaseMapper<RbTree> {
             "WHERE\n" +
             "\tt1.uid =  #{userName}")
     User fatherTree( String userName);
+
+    @Select("SELECT *FROM rb_tree WHERE uid = #{uid}")
+    RbTree getWithUid(String uid);
 }

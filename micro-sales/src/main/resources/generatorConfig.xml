@@ -89,7 +89,7 @@
         <!-- 指定列的java数据类型 -->
         <!-- <columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />-->
         <!-- </table>-->
-        <table tableName="tbl_sms_code" delimitAllColumns="true">
+        <table tableName="trader_user" delimitAllColumns="true">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>

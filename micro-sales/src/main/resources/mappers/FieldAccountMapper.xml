@@ -1,17 +1,30 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.gaozheng.sales.mapper.FieldAccountMapper" >
-  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.FieldAccount" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gaozheng.sales.mapper.FieldAccountMapper">
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.FieldAccount">
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="field_account_id" property="fieldAccountId" jdbcType="INTEGER" />
-    <result column="field_id" property="fieldId" jdbcType="INTEGER" />
-    <result column="balance" property="balance" jdbcType="BIGINT" />
-    <result column="discount" property="discount" jdbcType="INTEGER" />
-    <result column="account_type" property="accountType" jdbcType="TINYINT" />
-    <result column="quota" property="quota" jdbcType="BIGINT" />
-    <result column="money_id" property="moneyId" jdbcType="INTEGER" />
-    <result column="price" property="price" jdbcType="REAL" />
+    <id column="field_account_id" jdbcType="INTEGER" property="fieldAccountId" />
+    <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+    <result column="balance" jdbcType="BIGINT" property="balance" />
+    <result column="discount" jdbcType="INTEGER" property="discount" />
+    <result column="account_type" jdbcType="TINYINT" property="accountType" />
+    <result column="quota" jdbcType="BIGINT" property="quota" />
+    <result column="money_id" jdbcType="INTEGER" property="moneyId" />
+    <result column="price" jdbcType="REAL" property="price" />
+  </resultMap>
+  <resultMap id="BaseResultMap" type="cn.gaozheng.sales.model.po.FieldAccount">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="field_account_id" jdbcType="INTEGER" property="fieldAccountId" />
+    <result column="field_id" jdbcType="INTEGER" property="fieldId" />
+    <result column="balance" jdbcType="BIGINT" property="balance" />
+    <result column="discount" jdbcType="INTEGER" property="discount" />
+    <result column="account_type" jdbcType="TINYINT" property="accountType" />
+    <result column="quota" jdbcType="BIGINT" property="quota" />
+    <result column="money_id" jdbcType="INTEGER" property="moneyId" />
+    <result column="price" jdbcType="REAL" property="price" />
   </resultMap>
 </mapper>

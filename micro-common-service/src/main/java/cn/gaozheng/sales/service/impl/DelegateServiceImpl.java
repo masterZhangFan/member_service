@@ -68,7 +68,33 @@ public class DelegateServiceImpl implements DelegateService {
      @Override
     public PageInfo<DelegateListM> delegateList( DelegateListParm delegateListParm){
         List<DelegateListM> tblDelegates = tblDelegateMapper.delegateList(delegateListParm);
-        if (delegateListParm.getParentDelegateId() != null){
+        PageInfo<DelegateListM> pageInfo = new PageInfo<>(tblDelegates);
+         if (pageInfo.getList()!= null){
+             for (DelegateListM item:pageInfo.getList()) {
+                 List<Fan> f1 =  userInfoService.getDirectlyFanWithUserId(item.getUserId());
+                 List<Fan> f2 = userInfoService.getIndirectFanWithUserId(item.getUserId());
+                 List<Fan> f3 = userInfoService.getFissionFanWithUserId(item.getUserId());
+                 int count = 0;
+                 if (f1 != null) count=count+f1.size();
+                 if (f2 != null) count=count+f1.size();
+                 if (f3 != null) count=count+f1.size();
+                 item.setFans(count);
+                 Double cashBack =  tblCashBackMapper.cashBackMoneyOfDelegate(delegateListParm.getParentDelegateId(),item.getUserId());
+                 if (cashBack == null) cashBack = 0.0;
+                 item.setMoneyTotal(cashBack);
+                 if (!EmptyUtil.isNotEmpty(item.getIcon())){
+                     item.setIcon(EnumUtils.defaultProtrailt);
+                 }
+             }
+         }
+        return pageInfo;
+    }
+    @Override
+    public List<DelegateListM> delegateListNotOnPage(Long userId){
+        DelegateListParm delegateListParm = new DelegateListParm();
+        delegateListParm.setParentDelegateId(userId);
+        List<DelegateListM> tblDelegates = tblDelegateMapper.delegateList(delegateListParm);
+        if (tblDelegates!= null){
             for (DelegateListM item:tblDelegates) {
                 List<Fan> f1 =  userInfoService.getDirectlyFanWithUserId(item.getUserId());
                 List<Fan> f2 = userInfoService.getIndirectFanWithUserId(item.getUserId());
@@ -79,22 +105,8 @@ public class DelegateServiceImpl implements DelegateService {
                 if (f3 != null) count=count+f1.size();
                 item.setFans(count);
                 Double cashBack =  tblCashBackMapper.cashBackMoneyOfDelegate(delegateListParm.getParentDelegateId(),item.getUserId());
+                if (cashBack == null) cashBack = 0.0;
                 item.setMoneyTotal(cashBack);
-                if (!EmptyUtil.isNotEmpty(item.getIcon())){
-                    item.setIcon(EnumUtils.defaultProtrailt);
-                }
-            }
-        }
-        PageInfo<DelegateListM> pageInfo = new PageInfo<>(tblDelegates);
-        return pageInfo;
-    }
-    @Override
-    public List<DelegateListM> delegateListNotOnPage(Long userId){
-        DelegateListParm delegateListParm = new DelegateListParm();
-        delegateListParm.setParentDelegateId(userId);
-        List<DelegateListM> tblDelegates = tblDelegateMapper.delegateList(delegateListParm);
-        if (tblDelegates != null){
-            for (DelegateListM item:tblDelegates) {
                 if (!EmptyUtil.isNotEmpty(item.getIcon())){
                     item.setIcon(EnumUtils.defaultProtrailt);
                 }

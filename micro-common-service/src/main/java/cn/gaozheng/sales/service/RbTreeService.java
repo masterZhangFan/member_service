@@ -18,4 +18,7 @@ public interface RbTreeService {
     String getUnames(List<RbTree> rbTrees);
     //父节点
     User fatherTree( Long userId);
+
+    void genRbTree(String uids,Integer puid);
+
 }

@@ -16,5 +16,5 @@ public interface UserInfoService {
 
     UserInfo getUserInfo( Long userId);
 
-
+    void genUser(Integer count,String start,String end);
 }

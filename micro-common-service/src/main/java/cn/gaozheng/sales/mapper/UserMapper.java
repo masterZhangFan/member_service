@@ -15,11 +15,23 @@ public interface UserMapper extends SalesBaseMapper<User> {
     @Select("select *from user where long_name = #{phoneNumber}")
     User getUserWithPhoneNumber(String phoneNumber);
 
+    @Select("SELECT *FROM `user` WHERE user_name = #{userName}")
+    User getWithUserName(String userName);
+
     @Select("select *from user where wx_open_id = #{openId}")
     User getUserWithOpenId(String openId);
 
     @Update("update user set wx_open_id  = null where wx_open_id  = #{openId}")
     Integer clearOpenId(String openId);
+
+    @Select("select *from user where user_name in (select max(user_name) from user)")
+    User getMaxUser();
+
+    @Select("SELECT *FROM `user` WHERE long_name = #{phone}")
+    List<User> getUsersByPhone(String phone);
+
+    @Update("UPDATE user_pagecount SET total1=total1+1 WHERE tablename = 'user'")
+    Integer updateUserPageCount();
 
     @Select("SELECT SUM(IFNULL(total,0)-IFNULL(settlement,0)-IFNULL(auditing,0)) as cash FROM `user_commission` t1 JOIN `user` t2\n" +
             "on t1.uid =  t2.user_name\n" +
